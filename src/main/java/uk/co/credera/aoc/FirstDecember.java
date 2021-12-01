@@ -1,45 +1,38 @@
 package uk.co.credera.aoc;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
+import static java.lang.System.lineSeparator;
+
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import uk.co.credera.aoc.util.FileLoader;
 
 /**
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class FirstDecember {
+public class FirstDecember implements Callable<Integer> {
 
-  public static void main(String[] args) {
+  private static final int SUCCESS = 0;
+  private static final int FAILURE = 1;
+  private static final String FIRST_DECEMBER_TXT = "src/main/resources/uk/co/credera/aoc/FirstDecember.txt";
 
-    final FirstDecember counter = new FirstDecember();
-
-    final int firstPuzzle = counter.countIncreases("src/main/resources/FirstDecember.txt", 1);
-    System.out.printf("%d increases\n", firstPuzzle);
-
-    final int secondPuzzle = counter.countIncreases("src/main/resources/FirstDecember.txt", 3);
-    System.out.printf("%d increases\n", secondPuzzle);
-
+  public static void main(final String... args) {
+    try {
+      System.exit(new FirstDecember().call());
+    } catch (final Exception error) {
+      error.printStackTrace();
+      System.exit(FAILURE);
+    }
   }
 
 
   public int countIncreases(final String path, final int window) {
-    final List<Integer> items = loadItems(path);
-    return countIncreases(items, window);
+    final var loader = new FileLoader(path);
+    return countIncreases(loader.allIntegers(), window);
   }
 
-
-  public int countIncreases(final List<Integer> items) {
-
-    return window(items, 2).map(grouped -> grouped.get(1).compareTo(grouped.get(0)))
-                           .filter(i -> i > 0)
-                           .reduce(0, Integer::sum);
-
-  }
 
   public int countIncreases(final List<Integer> items, final int window) {
 
@@ -64,15 +57,11 @@ public class FirstDecember {
 
   }
 
-  private List<Integer> loadItems(final String path) {
+  public int countIncreases(final List<Integer> items) {
 
-    try (final Stream<String> lines = Files.lines(Path.of(path))) {
-
-      return lines.map(Integer::valueOf).toList();
-
-    } catch (final IOException ignored) {
-      return Collections.emptyList();
-    }
+    return window(items, 2).map(grouped -> grouped.get(1).compareTo(grouped.get(0)))
+                           .filter(i -> i > 0)
+                           .reduce(0, Integer::sum);
 
   }
 
@@ -85,4 +74,17 @@ public class FirstDecember {
                     .mapToObj(i -> items.subList(i - window + 1, i + 1));
   }
 
+  @Override
+  public Integer call() {
+
+    final var counter = new FirstDecember();
+
+    final var firstPuzzle = counter.countIncreases(FIRST_DECEMBER_TXT, 1);
+    System.out.printf("%d increases%s", firstPuzzle, lineSeparator());
+
+    final var secondPuzzle = counter.countIncreases(FIRST_DECEMBER_TXT, 3);
+    System.out.printf("%d increases%s", secondPuzzle, lineSeparator());
+
+    return SUCCESS;
+  }
 }
