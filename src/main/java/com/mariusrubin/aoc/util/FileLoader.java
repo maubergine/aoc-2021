@@ -1,4 +1,4 @@
-package uk.co.credera.aoc.util;
+package com.mariusrubin.aoc.util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * A convenience file loader, assuming this will be useful for more than one coding challenge.s
+ * A convenience file loader, assuming this will be useful for more than one coding challenge.
  *
  * @author Marius Rubin
  * @since 0.1.0
