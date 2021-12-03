@@ -34,7 +34,11 @@ public class FileLoader {
   }
 
   public IntStream integers() {
-    return lines().map(Integer::valueOf).mapToInt(Integer::intValue);
+    return boxedIntegers().mapToInt(Integer::intValue);
+  }
+
+  public IntStream binaryIntegers() {
+    return boxedIntegers(2).mapToInt(Integer::intValue);
   }
 
   public List<String> allLines() {
@@ -45,8 +49,16 @@ public class FileLoader {
     return boxedIntegers().toList();
   }
 
+  public List<Integer> allBinaryIntegers() {
+    return boxedIntegers(2).toList();
+  }
+
   private Stream<Integer> boxedIntegers() {
-    return lines().map(Integer::valueOf);
+    return boxedIntegers(10);
+  }
+
+  private Stream<Integer> boxedIntegers(final int radix) {
+    return lines().map(s -> Integer.valueOf(s, radix));
   }
 
 }

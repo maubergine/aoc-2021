@@ -12,8 +12,6 @@ import java.util.concurrent.Callable;
  */
 public class SecondDecember implements Callable<Integer> {
 
-  private static final int SUCCESS = 0;
-
   private static final String INSTRUCTIONS = "src/main/resources/com/mariusrubin/aoc/SecondDecember.txt";
 
   public static void main(final String... args) {
@@ -39,6 +37,6 @@ public class SecondDecember implements Callable<Integer> {
                       complex.getFinalPosition(),
                       lineSeparator());
 
-    return SUCCESS;
+    return Executor.SUCCESS;
   }
 }
