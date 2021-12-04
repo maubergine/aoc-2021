@@ -37,7 +37,10 @@ public class BingoBoard {
 
   private void processVerticals() {
     IntStream.range(0, LINE_LENGTH)
-             .mapToObj(i -> lines.stream().limit(LINE_LENGTH).map(line -> line.getNumberAtPosition(i)).toList())
+             .mapToObj(i -> lines.stream()
+                                 .limit(LINE_LENGTH)
+                                 .map(line -> line.getNumberAtPosition(i))
+                                 .toList())
              .map(line -> new BingoLine(line, Orientation.VERTICAL))
              .forEach(lines::add);
   }
@@ -51,7 +54,7 @@ public class BingoBoard {
                 .anyMatch(bingoLine -> bingoLine.mark(number));
   }
 
-  private final class BingoLine {
+  static final class BingoLine {
 
     private final List<Integer> numbers;
     private final List<Integer> matches = new ArrayList<>(LINE_LENGTH);
@@ -80,7 +83,7 @@ public class BingoBoard {
 
   }
 
-  private enum Orientation {
+  enum Orientation {
     HORIZONTAL,
     VERTICAL
   }
