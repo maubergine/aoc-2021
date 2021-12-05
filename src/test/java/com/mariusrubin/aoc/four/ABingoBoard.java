@@ -2,6 +2,7 @@ package com.mariusrubin.aoc.four;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,13 +12,11 @@ import org.junit.jupiter.api.Test;
  */
 public class ABingoBoard {
 
-  private static final int[][] INPUT_BOARD = {
-      {22, 13, 17, 11, 0},
-      {8, 2, 23, 4, 24},
-      {21, 9, 14, 16, 7},
-      {6, 10, 3, 18, 5},
-      {1, 12, 20, 15, 19}
-  };
+  private static final int[][] INPUT_BOARD = {{14, 21, 17, 24, 4},
+                                              {10, 16, 15, 9, 19},
+                                              {18, 8, 23, 26, 20},
+                                              {22, 11, 13, 6, 5},
+                                              {2, 0, 12, 3, 7}};
 
   private BingoBoard underTest;
 
@@ -28,32 +27,38 @@ public class ABingoBoard {
 
   @Test
   public void shouldRetrieveNumbersAtPosition() {
-    assertThat(underTest.getNumberAtPosition(4, 3)).isEqualTo(16);
-    assertThat(underTest.getNumberAtPosition(2, 4)).isEqualTo(2);
+    assertThat(underTest.getNumberAtPosition(4, 3)).isEqualTo(26);
+    assertThat(underTest.getNumberAtPosition(2, 4)).isEqualTo(16);
   }
 
   @Test
-  public void shouldMatch() {
-    assertThat(underTest.getNumberAtPosition(4, 3)).isEqualTo(16);
-    assertThat(underTest.getNumberAtPosition(2, 4)).isEqualTo(2);
+  public void shouldCalculateAScore() {
+    final var winningNo = IntStream.of(7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10)
+                                   .map(underTest::call)
+                                   .filter(i -> i >= 0)
+                                   .findFirst()
+                                   .orElse(-1);
+
+    assertThat(winningNo).isEqualTo(24);
+    assertThat(underTest.getScore()).isEqualTo(4512);
   }
 
   @Test
   public void shouldDetectHorizontalBingos() {
-    assertThat(underTest.mark(17)).isFalse();
-    assertThat(underTest.mark(13)).isFalse();
-    assertThat(underTest.mark(11)).isFalse();
-    assertThat(underTest.mark(22)).isFalse();
-    assertThat(underTest.mark(0)).isTrue();
+    assertThat(underTest.call(18)).isNegative();
+    assertThat(underTest.call(8)).isNegative();
+    assertThat(underTest.call(23)).isNegative();
+    assertThat(underTest.call(26)).isNegative();
+    assertThat(underTest.call(20)).isEqualTo(20);
   }
 
   @Test
   public void shouldDetectVerticalBingos() {
-    assertThat(underTest.mark(9)).isFalse();
-    assertThat(underTest.mark(13)).isFalse();
-    assertThat(underTest.mark(12)).isFalse();
-    assertThat(underTest.mark(2)).isFalse();
-    assertThat(underTest.mark(10)).isTrue();
+    assertThat(underTest.call(21)).isNegative();
+    assertThat(underTest.call(16)).isNegative();
+    assertThat(underTest.call(11)).isNegative();
+    assertThat(underTest.call(8)).isNegative();
+    assertThat(underTest.call(0)).isZero();
   }
 
 }

@@ -16,7 +16,9 @@ public class BingoBoard {
 
   private static final int LINE_LENGTH = 5;
 
-  private final List<BingoLine> lines;
+  private final List<BingoLine> horizontals;
+  private final List<BingoLine> verticals;
+  private       int             winningNumber = -1;
 
   public BingoBoard(final int[][] lines) {
     this(Arrays.stream(lines)
@@ -30,28 +32,41 @@ public class BingoBoard {
   }
 
   private BingoBoard(final Stream<List<Integer>> lines) {
-    this.lines = lines.map(line -> new BingoLine(line, Orientation.HORIZONTAL))
-                      .collect(Collectors.toList());
-    processVerticals();
+    horizontals = lines.map(BingoLine::new).collect(Collectors.toList());
+    verticals = processVerticals();
   }
 
-  private void processVerticals() {
-    IntStream.range(0, LINE_LENGTH)
-             .mapToObj(i -> lines.stream()
-                                 .limit(LINE_LENGTH)
-                                 .map(line -> line.getNumberAtPosition(i))
-                                 .toList())
-             .map(line -> new BingoLine(line, Orientation.VERTICAL))
-             .forEach(lines::add);
+  private List<BingoLine> processVerticals() {
+    return IntStream.range(0, LINE_LENGTH)
+                    .mapToObj(i -> horizontals.stream()
+                                              .map(line -> line.getNumberAtPosition(i))
+                                              .toList())
+                    .map(BingoLine::new)
+                    .collect(Collectors.toList());
   }
 
   public int getNumberAtPosition(final int x, final int y) {
-    return lines.get(LINE_LENGTH - y).getNumberAtPosition(x - 1);
+    return horizontals.get(LINE_LENGTH - y).getNumberAtPosition(x - 1);
   }
 
-  public boolean mark(final int number) {
-    return lines.stream()
-                .anyMatch(bingoLine -> bingoLine.mark(number));
+  public int call(final int number) {
+    return Stream.concat(horizontals.stream(), verticals.stream())
+                 .map(bingo -> bingo.call(number))
+                 .filter(i -> i >= 0)
+                 .peek(i -> winningNumber = i)
+                 .findAny()
+                 .orElse(-1);
+  }
+
+  public int getScore() {
+    if (winningNumber < 0) {
+      return winningNumber;
+    }
+
+    return horizontals.stream()
+                      .flatMap(line -> line.getUnmarked().stream())
+                      .mapToInt(Integer::intValue)
+                      .sum() * winningNumber;
   }
 
   static final class BingoLine {
@@ -59,33 +74,31 @@ public class BingoBoard {
     private final List<Integer> numbers;
     private final List<Integer> matches = new ArrayList<>(LINE_LENGTH);
 
-    private final Orientation orientation;
-
-    private BingoLine(final List<Integer> numbers, final Orientation orientation) {
+    private BingoLine(final List<Integer> numbers) {
       this.numbers = Collections.unmodifiableList(numbers);
-      this.orientation = orientation;
     }
 
-    private boolean mark(final int number) {
+    private int call(final int number) {
       if (numbers.contains(number)) {
         matches.add(number);
       }
-      return isComplete();
+      return isComplete() ? number : -1;
     }
 
     private boolean isComplete() {
       return numbers.size() == matches.size();
     }
 
+    private List<Integer> getUnmarked() {
+      final var toFilter = new ArrayList<>(numbers);
+      toFilter.removeAll(matches);
+      return toFilter;
+    }
+
     private int getNumberAtPosition(final int position) {
       return numbers.get(position);
     }
 
-  }
-
-  enum Orientation {
-    HORIZONTAL,
-    VERTICAL
   }
 
 }
