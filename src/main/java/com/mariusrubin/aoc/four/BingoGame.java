@@ -30,8 +30,7 @@ public class BingoGame {
                 .filter(cbp -> cbp.call() > -1)
                 .map(CallBoardPair::board)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                    "Should be at least 1 winning board"));
+                .orElseThrow();
 
   }
 
@@ -42,7 +41,7 @@ public class BingoGame {
                 .filter(cbp -> cbp.call() > -1)
                 .map(CallBoardPair::board)
                 .reduce((b1, b2) -> b2)
-                .orElseThrow(() -> new IllegalStateException("Should be at least 1 winning board"));
+                .orElseThrow();
   }
 
   private Stream<CallBoardPair> doCalls(final int call) {
