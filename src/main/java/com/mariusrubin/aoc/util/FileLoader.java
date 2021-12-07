@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -15,6 +16,8 @@ import java.util.stream.Stream;
  * @since 0.1.0
  */
 public class FileLoader {
+
+  private static final Pattern COMMA = Pattern.compile(",");
 
   private final Path path;
 
@@ -39,6 +42,14 @@ public class FileLoader {
 
   public IntStream binaryIntegers() {
     return boxedIntegers(2).mapToInt(Integer::intValue);
+  }
+
+  public IntStream commaSeparatedIntegers() {
+    return lines().flatMap(COMMA::splitAsStream).mapToInt(Integer::parseInt);
+  }
+
+  public List<Integer> allCommaSeparatedIntegers() {
+    return commaSeparatedIntegers().boxed().toList();
   }
 
   public List<String> allLines() {
