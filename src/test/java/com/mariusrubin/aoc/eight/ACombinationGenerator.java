@@ -18,7 +18,7 @@ public class ACombinationGenerator {
 
     assertThat(CombinationGenerator.allCombinations('a', 'c', 3))
         .containsExactlyInAnyOrder("abc", "acb", "bac", "bca", "cab", "cba");
-    
+
   }
 
 }
