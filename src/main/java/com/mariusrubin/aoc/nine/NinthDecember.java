@@ -5,7 +5,6 @@ import static java.lang.System.lineSeparator;
 import com.mariusrubin.aoc.util.Executor;
 import com.mariusrubin.aoc.util.FileLoader;
 import java.util.concurrent.Callable;
-import java.util.stream.IntStream;
 
 /**
  * @author Marius Rubin
@@ -13,8 +12,7 @@ import java.util.stream.IntStream;
  */
 public class NinthDecember implements Callable<Integer> {
 
-  private static final String HEIGHTMAP        = "src/main/resources/com/mariusrubin/aoc/NinthDecember.txt";
-  private static final int    INTERPRET_OFFSET = 48;
+  private static final String HEIGHTMAP = "src/main/resources/com/mariusrubin/aoc/NinthDecember.txt";
 
   public static void main(final String... args) {
     Executor.doRun(new NinthDecember());
@@ -23,10 +21,7 @@ public class NinthDecember implements Callable<Integer> {
   @Override
   public Integer call() {
 
-    final var heightMap = new FileLoader(HEIGHTMAP).lines()
-                                                   .map(String::chars)
-                                                   .map(NinthDecember::toIntArray)
-                                                   .toArray(int[][]::new);
+    final var heightMap = new FileLoader(HEIGHTMAP).integerArray();
 
     final var analyser = new HeightmapAnalyser(heightMap);
 
@@ -38,7 +33,4 @@ public class NinthDecember implements Callable<Integer> {
 
   }
 
-  private static int[] toIntArray(final IntStream charStream) {
-    return charStream.map(i -> i - INTERPRET_OFFSET).toArray();
-  }
 }

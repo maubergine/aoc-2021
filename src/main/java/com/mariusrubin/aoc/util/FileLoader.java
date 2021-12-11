@@ -17,7 +17,8 @@ import java.util.stream.Stream;
  */
 public class FileLoader {
 
-  private static final Pattern COMMA = Pattern.compile(",");
+  private static final Pattern COMMA          = Pattern.compile(",");
+  private static final int     INTEGER_OFFSET = 48;
 
   private final Path path;
 
@@ -72,4 +73,7 @@ public class FileLoader {
     return lines().map(s -> Integer.valueOf(s, radix));
   }
 
+  public int[][] integerArray() {
+    return lines().map(s -> s.chars().map(i -> i - INTEGER_OFFSET).toArray()).toArray(int[][]::new);
+  }
 }
