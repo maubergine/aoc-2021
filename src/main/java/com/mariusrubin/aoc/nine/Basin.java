@@ -5,7 +5,7 @@ import java.util.StringJoiner;
 
 /**
  * @author Marius Rubin
- * @since //TODO
+ * @since 0.1.0
  */
 public class Basin {
 
@@ -16,16 +16,8 @@ public class Basin {
     Arrays.sort(this.members);
   }
 
-  public int[] getMembers() {
-    return members.clone();
-  }
-
   public int getSize() {
     return members.length;
-  }
-
-  public int getLowPoint() {
-    return members[0];
   }
 
   @Override

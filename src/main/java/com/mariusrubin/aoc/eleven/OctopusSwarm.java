@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  */
 public class OctopusSwarm {
 
-  private Octopus[][] swarm;
+  private final Octopus[][] swarm;
 
   public OctopusSwarm(final int[][] input) {
     swarm = IntStream.range(0, input.length)
@@ -84,7 +84,7 @@ public class OctopusSwarm {
     return generateCoordinates(start).map(coord -> swarm[coord.row()][coord.column()]);
   }
 
-  private Stream<Coordinate> generateCoordinates(final Octopus start) {
+  private static Stream<Coordinate> generateCoordinates(final Octopus start) {
     return Stream.of(new Coordinate(start.getRow(), start.getColumn() - 1),
                      new Coordinate(start.getRow(), start.getColumn() + 1),
                      new Coordinate(start.getRow() - 1, start.getColumn() - 1),
@@ -105,14 +105,14 @@ public class OctopusSwarm {
   }
 
 
-  private Octopus[] toOctopi(final int[][] input, final int rowNum) {
+  private static Octopus[] toOctopi(final int[][] input, final int rowNum) {
     final var row = input[rowNum];
     return IntStream.range(0, row.length)
                     .mapToObj(j -> new Octopus(rowNum, j, input[rowNum][j]))
                     .toArray(Octopus[]::new);
   }
 
-  private class Octopus {
+  private static final class Octopus {
 
     private final int row;
     private final int column;

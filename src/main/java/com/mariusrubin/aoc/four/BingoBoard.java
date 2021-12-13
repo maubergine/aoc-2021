@@ -69,7 +69,7 @@ public class BingoBoard {
                       .sum() * winningNumber;
   }
 
-  static final class BingoLine {
+  private static final class BingoLine {
 
     private final List<Integer> numbers;
     private final List<Integer> matches = new ArrayList<>(LINE_LENGTH);
