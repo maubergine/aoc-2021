@@ -25,6 +25,12 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.5.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <artifactId>junit-jupiter</artifactId>
             <groupId>org.junit.jupiter</groupId>
             <scope>test</scope>
