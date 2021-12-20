@@ -146,10 +146,7 @@ public class SnailNumber {
     }
 
     if (!right.isValue()) {
-      final var rightNest = right.findFirstFourNested();
-      if (rightNest != null) {
-        return rightNest;
-      }
+      return right.findFirstFourNested();
     }
 
     return null;

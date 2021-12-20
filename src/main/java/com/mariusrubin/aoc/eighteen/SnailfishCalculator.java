@@ -70,7 +70,7 @@ public class SnailfishCalculator {
 
       if (firstToReduce != null) {
         firstToReduce.doReduce();
-      } else if (toSplit != null) {
+      } else {
         toSplit.doSplit();
       }
 
