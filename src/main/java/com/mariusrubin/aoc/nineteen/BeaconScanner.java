@@ -155,7 +155,7 @@ public class BeaconScanner {
   }
 
   public void setToAbsolute(final RotOp toAbsolute) {
-    if(isAbsolute() && toAbsolute == RotOp.A) {
+    if (isAbsolute() && toAbsolute == RotOp.A) {
       return;
     }
 
