@@ -60,10 +60,10 @@ public class Polymeriser {
             final var inserted  = new StringBuilder(e.getKey()).insert(1, insert).toString();
             final var leftPair  = inserted.substring(0, 2);
             final var rightPair = inserted.substring(1, 3);
-            pairs.put(e.getKey(), pairs.getOrDefault(e.getKey(), 0L) - e.getValue());
-            pairs.put(leftPair, pairs.getOrDefault(leftPair, 0L) + e.getValue());
-            pairs.put(rightPair, pairs.getOrDefault(rightPair, 0L) + e.getValue());
-            counts.put(insert, counts.getOrDefault(insert, 0L) + e.getValue());
+            pairs.merge(e.getKey(), -e.getValue(), Long::sum);
+            pairs.merge(leftPair, e.getValue(), Long::sum);
+            pairs.merge(rightPair, e.getValue(), Long::sum);
+            counts.merge(insert, e.getValue(), Long::sum);
           });
   }
 
