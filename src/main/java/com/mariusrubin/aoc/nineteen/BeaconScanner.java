@@ -1,6 +1,7 @@
 package com.mariusrubin.aoc.nineteen;
 
 import static java.lang.Math.abs;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public class BeaconScanner {
 
   public List<BeaconReading> vectorise(final BeaconReading reading) {
     return readings.stream()
-                   .filter(other -> !reading.equals(other))
+                   .filter(not(reading::equals))
                    .map(reading::vectorise)
                    .toList();
   }

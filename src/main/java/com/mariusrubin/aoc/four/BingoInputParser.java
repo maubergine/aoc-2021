@@ -2,6 +2,7 @@ package com.mariusrubin.aoc.four;
 
 import static java.lang.Math.floor;
 import static java.lang.Math.round;
+import static java.util.function.Predicate.not;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,7 @@ public class BingoInputParser {
     return lines.stream()
                 .sequential()
                 .skip(2)
-                .filter(s -> !s.isEmpty())
+                .filter(not(String::isEmpty))
                 .map(s -> {
                   final var group = (double) counter.getAndIncrement() / 5;
                   return new IntegerLine((int) round(floor(group)), toIntegers(s));
