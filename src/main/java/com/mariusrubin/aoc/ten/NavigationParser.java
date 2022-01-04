@@ -23,7 +23,9 @@ import java.util.stream.StreamSupport;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class NavigationParser {
+class NavigationParser {
+
+  private static final int SCORE_MULTIPLIER = 5;
 
   private static final Map<Character, Character> CHAR_MAP =
       Stream.of("()", "[]", "{}", "<>")
@@ -46,31 +48,31 @@ public class NavigationParser {
 
   private final List<String> inputs;
 
-  public NavigationParser(final List<String> inputs) {
+  NavigationParser(final List<String> inputs) {
     this.inputs = Collections.unmodifiableList(inputs);
   }
 
-  public List<IllegalCharacter> findIllegalCharacters() {
+  List<IllegalCharacter> findIllegalCharacters() {
     return IntStream.range(0, inputs.size())
                     .mapToObj(this::illegalOrEmpty)
                     .flatMap(Function.identity())
                     .toList();
   }
 
-  public int calculateIllegalityScore() {
+  int calculateIllegalityScore() {
     return findIllegalCharacters().stream()
                                   .map(IllegalCharacter::actual)
                                   .mapToInt(ILLEGAL_SCORE_MAP::get)
                                   .sum();
   }
 
-  public List<String> getCompletedLines() {
+  List<String> getCompletedLines() {
     return getCompletions().map(Completion::result).toList();
   }
 
-  public long calculateCompletionScore() {
+  long calculateCompletionScore() {
     final var results = getCompletions().map(Completion::completion)
-                                        .mapToLong(this::calculateScore)
+                                        .mapToLong(NavigationParser::calculateScore)
                                         .sorted()
                                         .toArray();
 
@@ -81,14 +83,6 @@ public class NavigationParser {
     return IntStream.range(0, inputs.size())
                     .mapToObj(this::completeOrEmpty)
                     .flatMap(Function.identity());
-  }
-
-  private long calculateScore(final String completion) {
-    return completion.chars()
-                     .sequential()
-                     .mapToObj(i -> (char) i)
-                     .mapToLong(COMPLETION_SCORE_MAP::get)
-                     .reduce(0, (i1, i2) -> i1 * 5 + i2);
   }
 
   private Stream<Completion> completeOrEmpty(final int lineNo) {
@@ -125,15 +119,6 @@ public class NavigationParser {
 
   }
 
-  private static String toCompletionString(final Deque<Character> terminators) {
-    return StreamSupport.stream(spliterator(terminators.descendingIterator(),
-                                            terminators.size(),
-                                            NONNULL | IMMUTABLE | ORDERED),
-                                false)
-                        .map(String::valueOf)
-                        .collect(Collectors.joining());
-  }
-
   private Stream<IllegalCharacter> illegalOrEmpty(final int lineNo) {
 
     final var terminators = new ArrayDeque<Character>();
@@ -143,6 +128,23 @@ public class NavigationParser {
                     .mapToObj(i -> determineIllegality(lineNo, terminators, line, i))
                     .flatMap(Function.identity());
 
+  }
+
+  private static long calculateScore(final String completion) {
+    return completion.chars()
+                     .sequential()
+                     .mapToObj(i -> (char) i)
+                     .mapToLong(COMPLETION_SCORE_MAP::get)
+                     .reduce(0, (i1, i2) -> i1 * SCORE_MULTIPLIER + i2);
+  }
+
+  private static String toCompletionString(final Deque<Character> terminators) {
+    return StreamSupport.stream(spliterator(terminators.descendingIterator(),
+                                            terminators.size(),
+                                            NONNULL | IMMUTABLE | ORDERED),
+                                false)
+                        .map(String::valueOf)
+                        .collect(Collectors.joining());
   }
 
   private static Stream<IllegalCharacter> determineIllegality(final int lineNo,
@@ -171,11 +173,11 @@ public class NavigationParser {
     return CHAR_MAP.containsKey(character);
   }
 
-  public record Completion(String result, String completion) {
+  record Completion(String result, String completion) {
 
   }
 
-  public record IllegalCharacter(char expected, char actual, int position, int line) {
+  record IllegalCharacter(char expected, char actual, int position, int line) {
 
   }
 

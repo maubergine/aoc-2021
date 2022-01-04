@@ -4,7 +4,7 @@ package com.mariusrubin.aoc.two;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public interface Submarine {
+interface Submarine {
 
   void followInstruction(final String instruction);
 

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public abstract class AbstractSubmarine implements Submarine {
+abstract class AbstractSubmarine implements Submarine {
 
   private static final Pattern SPLIT_PATTERN = Pattern.compile(" ");
 

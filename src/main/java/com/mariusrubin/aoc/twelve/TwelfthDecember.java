@@ -26,7 +26,8 @@ public class TwelfthDecember implements Callable<Integer> {
     final var oneStop = new Pathfinder(data);
     System.out.printf("Possible one-stop paths: %d%s", oneStop.countPaths(), lineSeparator());
 
-    final var twoStop = new Pathfinder(data, 2);
+    final var maxVisit = 2;
+    final var twoStop  = new Pathfinder(data, maxVisit);
     System.out.printf("Possible two-stop paths: %d%s", twoStop.countPaths(), lineSeparator());
 
     return Executor.SUCCESS;

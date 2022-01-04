@@ -13,14 +13,6 @@ import org.junit.jupiter.api.condition.OS;
 @DisabledOnOs(OS.MAC)
 public class AnAmphipodMover {
 
-  private static final String INPUT = """
-      #############
-      #...........#
-      ###B#C#B#D###
-        #A#D#C#A#
-        #########
-            """;
-
   private AmphipodMover underTest;
 
   @Test

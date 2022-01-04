@@ -6,75 +6,75 @@ import java.util.Objects;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class Amphipod {
+class Amphipod {
 
   private final AmphipodType type;
   private       Coordinate   position;
   private final int          roomBottom;
 
-  public Amphipod(final Amphipod source) {
+  Amphipod(final Amphipod source) {
     this(source.getType(), source.getPosition(), source.getRoomBottom());
   }
 
-  public Amphipod(final AmphipodType type, final int x, final int y, final int roomBottom) {
+  Amphipod(final AmphipodType type, final int x, final int y, final int roomBottom) {
     this(type, new Coordinate(x, y), roomBottom);
   }
 
-  public Amphipod(final AmphipodType type, final Coordinate position, final int roomBottom) {
+  Amphipod(final AmphipodType type, final Coordinate position, final int roomBottom) {
     this.type = type;
     this.position = position;
     this.roomBottom = roomBottom;
   }
 
-  public AmphipodType getType() {
+  AmphipodType getType() {
     return type;
   }
 
-  public Coordinate getPosition() {
+  Coordinate getPosition() {
     return position;
   }
 
-  public int getX() {
+  int getX() {
     return position.x();
   }
 
-  public int getY() {
+  int getY() {
     return position.y();
   }
 
-  public void setPosition(final Coordinate position) {
+  void setPosition(final Coordinate position) {
     this.position = position;
   }
 
-  public boolean inHallway() {
+  boolean inHallway() {
     return getY() == 0;
   }
 
-  public boolean inRoom() {
+  boolean inRoom() {
     return !inHallway();
   }
 
-  public boolean isTop() {
+  boolean isTop() {
     return getY() == 1;
   }
 
-  public boolean isBottom() {
+  boolean isBottom() {
     return getY() == roomBottom;
   }
 
-  public int getRoomBottom() {
+  int getRoomBottom() {
     return roomBottom;
   }
 
-  public int getTargetRoom() {
+  int getTargetRoom() {
     return getType().getRoomPosition();
   }
 
-  public boolean inCorrectRoom() {
+  boolean inCorrectRoom() {
     return getX() == getTargetRoom();
   }
 
-  public boolean inFinalPosition() {
+  boolean inFinalPosition() {
     return inCorrectRoom() && getY() == roomBottom;
   }
 

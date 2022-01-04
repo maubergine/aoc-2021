@@ -6,11 +6,11 @@ import static java.lang.Math.abs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,30 +20,30 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class BitsDecoder {
+class BitsDecoder {
 
   private static final Map<Character, String> LOOKUP            = buildLookup();
   private static final String                 LAST_GROUP_MARKER = "0";
 
   private final List<String> unpacked;
 
-  public BitsDecoder(final String input) {
+  BitsDecoder(final String input) {
     unpacked = unpack(input);
   }
 
-  public int sumVersions() {
+  int sumVersions() {
     return decodePackets().stream()
                           .map(Packet::header)
                           .mapToInt(PacketHeader::version)
                           .sum();
   }
 
-  public long outermostValue() {
+  long outermostValue() {
     final var packets = decodePackets();
     return packets.get(packets.size() - 1).value();
   }
 
-  public List<Packet> decodePackets() {
+  List<Packet> decodePackets() {
     return decodePackets(unpacked.listIterator(), Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
   }
 
@@ -57,30 +57,29 @@ public class BitsDecoder {
 
     int packetsFound = 0;
 
-    PacketHeader header = null;
+    final var header = new AtomicReference<PacketHeader>();
 
     while (it.hasNext() && packetsFound < maxPackets && it.nextIndex() < abs(start + maxBits)) {
 
       try {
 
-        if (header == null) {
-          header = buildHeader(it, currentDepth);
+        if (header.get() == null) {
+          header.set(buildHeader(it, currentDepth));
         }
 
-        if (header.type() == LITERAL) {
+        if (header.get().type() == LITERAL) {
 
-          packets.add(decodeLiteral(it, header));
-          packetsFound++;
+          packets.add(decodeLiteral(it, header.get()));
 
         } else {
 
-          decodeComplex(it, currentDepth, packets, header);
-          packetsFound++;
+          decodeComplex(it, currentDepth, packets, header.get());
 
         }
+        packetsFound++;
 
         //Reset header
-        header = null;
+        header.set(null);
 
 
       } catch (final NoSuchElementException ignored) {
@@ -187,7 +186,7 @@ public class BitsDecoder {
                 .flatMapToInt(String::chars)
                 .mapToObj(i -> (char) i)
                 .map(String::valueOf)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .toList();
   }
 
   private static long longToBinary(final String value) {
@@ -225,7 +224,6 @@ public class BitsDecoder {
   }
 
   record PacketHeader(int version, PacketType type, int depth) {
-
 
   }
 

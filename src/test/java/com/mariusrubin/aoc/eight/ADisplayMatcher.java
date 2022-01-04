@@ -2,7 +2,6 @@ package com.mariusrubin.aoc.eight;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -13,16 +12,9 @@ public class ADisplayMatcher {
 
   private static final String INPUT_PATTERN = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab";
 
-  private DisplayMatcher underTest;
-
-  @BeforeEach
-  public void init() {
-    underTest = new DisplayMatcher();
-  }
-
   @Test
   public void shouldFindADisplayMatchingPattern() {
-    final var display = underTest.findDisplayMatching(INPUT_PATTERN);
+    final var display = DisplayMatcher.findDisplayMatching(INPUT_PATTERN);
 
     assertThat(display).isNotNull();
     assertThat(display.convert("ab")).isEqualTo(1);

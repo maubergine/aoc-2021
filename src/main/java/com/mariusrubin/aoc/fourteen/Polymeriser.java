@@ -17,23 +17,23 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class Polymeriser {
+class Polymeriser {
 
   private static final Pattern PAIR_RULE = Pattern.compile("^([A-Z]{2}) -> ([A-Z])$");
 
   private final String                 template;
   private final Map<String, Character> rules;
 
-  public Polymeriser(final List<String> inputs) {
+  Polymeriser(final List<String> inputs) {
     template = inputs.get(0);
     rules = inputs.stream()
                   .filter(PAIR_RULE.asMatchPredicate())
                   .map(PAIR_RULE::matcher)
-                  .peek(Matcher::find)
+                  .filter(Matcher::find)
                   .collect(toMap(match -> match.group(1), match -> match.group(2).charAt(0)));
   }
 
-  public long calculateOutput(final String input, final int steps) {
+  long calculateOutput(final String input, final int steps) {
     final var pairs = initPairs(input);
     final var counts = input.chars()
                             .mapToObj(i -> (char) i)
@@ -46,6 +46,10 @@ public class Polymeriser {
 
     return getMaxLessMin(counts);
 
+  }
+
+  long calculateOutput(final int steps) {
+    return calculateOutput(template, steps);
   }
 
   private void doStep(final Map<String, Long> pairs,
@@ -67,10 +71,6 @@ public class Polymeriser {
           });
   }
 
-  public long calculateOutput(final int steps) {
-    return calculateOutput(template, steps);
-  }
-
   private Map<String, Long> initPairs(final String input) {
     return IntStream.range(0, input.length() - 1)
                     .mapToObj(i -> new char[]{template.charAt(i), template.charAt(i + 1)})
@@ -79,7 +79,7 @@ public class Polymeriser {
   }
 
 
-  private long getMaxLessMin(final Map<Character, Long> counts) {
+  private static long getMaxLessMin(final Map<Character, Long> counts) {
     final var max = counts.values().stream().mapToLong(Long::longValue).max().orElseThrow();
     final var min = counts.values().stream().mapToLong(Long::longValue).min().orElseThrow();
     return max - min;

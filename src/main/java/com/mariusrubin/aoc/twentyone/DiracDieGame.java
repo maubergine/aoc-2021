@@ -15,27 +15,16 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class DiracDieGame extends AbstractDieGame {
+class DiracDieGame extends AbstractDieGame {
 
   private static final Map<Integer, Long> SCORES        = buildScores();
   private static final int                WINNING_SCORE = 21;
 
   private boolean hasRun;
 
-  private static Map<Integer, Long> buildScores() {
-    return IntStream.rangeClosed(1, 3)
-                    .flatMap(i -> IntStream.rangeClosed(1, 3)
-                                           .flatMap(j -> IntStream.rangeClosed(1, 3)
-                                                                  .map(k -> i + j + k)))
-                    .boxed()
-                    .collect(Collectors.groupingBy(Function.identity(),
-                                                   HashMap::new,
-                                                   Collectors.counting()));
-  }
-
   private final Map<GameState, Long> games = new HashMap<>();
 
-  public DiracDieGame(final List<String> input) {
+  DiracDieGame(final List<String> input) {
     super(input);
   }
 
@@ -49,19 +38,19 @@ public class DiracDieGame extends AbstractDieGame {
     return Math.min(playerOneWins(), playerTwoWins());
   }
 
-  public long playerOneWins() {
+  @Override
+  protected int getWinningScore() {
+    return WINNING_SCORE;
+  }
+
+  private long playerOneWins() {
     runGame();
     return calculateWins(GameState::getOneScore);
   }
 
-  public long playerTwoWins() {
+  private long playerTwoWins() {
     runGame();
     return calculateWins(GameState::getTwoScore);
-  }
-
-  @Override
-  protected int getWinningScore() {
-    return WINNING_SCORE;
   }
 
   private void runGame() {
@@ -75,6 +64,7 @@ public class DiracDieGame extends AbstractDieGame {
     IntStream.iterate(0, i -> hasUnfinishedGames(), i -> (i + 1) % 2).forEach(this::doPlays);
 
     hasRun = true;
+
   }
 
   private long calculateWins(final Function<GameState, Integer> scoreCall) {
@@ -93,12 +83,14 @@ public class DiracDieGame extends AbstractDieGame {
                             .filter(e -> isInProgress(e.getKey()))
                             .collect(toMap(Entry::getKey, Entry::getValue));
 
-    final BiFunction<GameState, Integer, GameState> playMethod = playerFlag == 0
-                                                                 ? GameState::updateOne
-                                                                 : GameState::updateTwo;
+    final BiFunction<GameState, Integer, GameState> playMethod = functionFromFlag(playerFlag);
 
     toWalk.forEach((state, howMany) -> {
-      SCORES.forEach((score, frequency) -> runGames(state, playMethod, howMany, score, frequency));
+      SCORES.forEach((score, frequency) -> runGames(state,
+                                                    functionFromFlag(playerFlag),
+                                                    howMany,
+                                                    score,
+                                                    frequency));
       games.merge(state, -howMany, Long::sum);
     });
 
@@ -120,6 +112,17 @@ public class DiracDieGame extends AbstractDieGame {
                 .stream()
                 .filter(e -> e.getValue() > 0L)
                 .anyMatch(e -> isInProgress(e.getKey()));
+  }
+
+  private static Map<Integer, Long> buildScores() {
+    return IntStream.rangeClosed(1, MAX_ROLLS)
+                    .flatMap(i -> IntStream.rangeClosed(1, MAX_ROLLS)
+                                           .flatMap(j -> IntStream.rangeClosed(1, MAX_ROLLS)
+                                                                  .map(k -> i + j + k)))
+                    .boxed()
+                    .collect(Collectors.groupingBy(Function.identity(),
+                                                   HashMap::new,
+                                                   Collectors.counting()));
   }
 
 }

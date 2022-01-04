@@ -14,21 +14,22 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class MonadProcessor {
+class MonadProcessor {
+
+  private static final int MIN_VALUE = 1;
+  private static final int MAX_VALUE = 9;
 
   private final List<String> inputs;
 
-
-  public MonadProcessor(final List<String> inputs) {
+  MonadProcessor(final List<String> inputs) {
     this.inputs = Collections.unmodifiableList(inputs);
   }
 
-
-  public long findLargestValidNumber() {
+  long findLargestValidNumber() {
     return findValidNumberFromMonads(MonadRun::getInputMax);
   }
 
-  public long findSmallestValidNumber() {
+  long findSmallestValidNumber() {
     return findValidNumberFromMonads(MonadRun::getInputMin);
   }
 
@@ -45,7 +46,7 @@ public class MonadProcessor {
 
   private List<MonadRun> getMonadRuns() {
 
-    final var runs = new MonadParser().parse(inputs);
+    final var runs = MonadParser.parse(inputs);
 
     final var it = runs.listIterator();
 
@@ -59,9 +60,10 @@ public class MonadProcessor {
                                   .findFirst()
                                   .orElseThrow();
 
-        final var popRange = IntStream.rangeClosed(push.getOffset() + 1, push.getOffset() + 9)
+        final var popRange = IntStream.rangeClosed(push.getOffset() + MIN_VALUE,
+                                                   push.getOffset() + MAX_VALUE)
                                       .map(i -> i + pop.getOffset())
-                                      .filter(i -> i > 0 && i <= 9)
+                                      .filter(MonadProcessor::isWithinAcceptableRange)
                                       .toArray();
 
         final var pushRange = IntStream.of(popRange)
@@ -84,6 +86,9 @@ public class MonadProcessor {
 
   }
 
+  private static boolean isWithinAcceptableRange(final int value) {
+    return value >= MIN_VALUE && value <= MAX_VALUE;
+  }
 
   private static String extract(final Collection<MonadRun> runs,
                                 final ToIntFunction<MonadRun> intFunc) {

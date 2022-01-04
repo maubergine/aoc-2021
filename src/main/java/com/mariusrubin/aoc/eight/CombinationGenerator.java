@@ -9,21 +9,20 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class CombinationGenerator {
+final class CombinationGenerator {
 
-  public static Set<String> allCombinations(final char start, final char end, final int length) {
+  private CombinationGenerator() {
+  }
+
+  static Set<String> allCombinations(final char start, final char end, final int length) {
     return generateCombinations(start, end, length)
         .filter(CombinationGenerator::stringDoesNotContainDupes)
         .collect(Collectors.toSet());
   }
 
-  private static boolean stringDoesNotContainDupes(final String input) {
-    return input.length() == input.chars().distinct().toArray().length;
-  }
-
-  public static Stream<String> generateCombinations(final char start,
-                                                    final char end,
-                                                    final int length) {
+  static Stream<String> generateCombinations(final char start,
+                                             final char end,
+                                             final int length) {
 
     if (length == 0) {
       return Stream.empty();
@@ -34,6 +33,10 @@ public class CombinationGenerator {
                     .map(String::valueOf)
                     .flatMap(s -> lengthBasedStream(start, end, s, length));
 
+  }
+
+  private static boolean stringDoesNotContainDupes(final String input) {
+    return input.length() == input.chars().distinct().toArray().length;
   }
 
   private static Stream<String> lengthBasedStream(final char start,

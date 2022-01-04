@@ -20,9 +20,11 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class BeaconScanner {
+class BeaconScanner {
 
-  private static final List<RotOp> ROTATIONS = Arrays.stream(RotOp.values()).toList();
+  private static final int           DEFAULT_THRESHOLD = 12;
+  private static final List<RotOp>   ROTATIONS         = Arrays.stream(RotOp.values()).toList();
+  private static final BeaconReading ABSOLUTE          = new BeaconReading(0, 0, 0);
 
   private final int           id;
   private       BeaconReading actualPosition;
@@ -31,18 +33,18 @@ public class BeaconScanner {
   private final List<BeaconReading> readings;
   private final int                 threshold;
 
-  public BeaconScanner(final int id, final List<BeaconReading> readings) {
+  BeaconScanner(final int id, final List<BeaconReading> readings) {
 
-    this(id, 12, readings);
+    this(id, DEFAULT_THRESHOLD, readings);
   }
 
-  public BeaconScanner(final int id, final int threshold, final List<BeaconReading> readings) {
+  BeaconScanner(final int id, final int threshold, final List<BeaconReading> readings) {
     this.id = id;
     this.readings = new ArrayList<>(readings);
     this.threshold = threshold;
   }
 
-  public List<BeaconReading[]> matchAndReorient(final BeaconScanner to) {
+  List<BeaconReading[]> matchAndReorient(final BeaconScanner to) {
 
     if (!to.isAbsolute()) {
       //Don't reorient onto non-absolute beacons
@@ -66,7 +68,7 @@ public class BeaconScanner {
     final var diffOp     = findDiffOp(absolute, toAbsolute.getOp().apply(relative));
     final var completeOp = toAbsolute.getOp().andThen(diffOp);
 
-    actualPosition = completeOp.apply(new BeaconReading(0, 0, 0));
+    actualPosition = completeOp.apply(ABSOLUTE);
 
     final var reoriented = readings.stream()
                                    .map(completeOp)
@@ -79,7 +81,7 @@ public class BeaconScanner {
 
   }
 
-  public List<BeaconReading[]> findMatchedPairs(final BeaconScanner absolute) {
+  List<BeaconReading[]> findMatchedPairs(final BeaconScanner absolute) {
     final var absVec = absolute.vectorisedBeacons();
 
     return ROTATIONS.stream()
@@ -134,28 +136,15 @@ public class BeaconScanner {
   }
 
 
-  public List<BeaconReading> getReadings() {
+  List<BeaconReading> getReadings() {
     return Collections.unmodifiableList(readings);
   }
 
-  private Function<BeaconReading, BeaconReading> findDiffOp(final BeaconReading b1,
-                                                            final BeaconReading b2) {
-
-    final var xDiff = b1.getX() - b2.getX();
-    final var yDiff = b1.getY() - b2.getY();
-    final var zDiff = b1.getZ() - b2.getZ();
-
-    return beacon -> new BeaconReading(beacon.getX() + xDiff,
-                                       beacon.getY() + yDiff,
-                                       beacon.getZ() + zDiff);
-
-  }
-
-  public boolean isAbsolute() {
+  boolean isAbsolute() {
     return id == 0 || actualPosition != null;
   }
 
-  public void setToAbsolute(final RotOp toAbsolute) {
+  void setToAbsolute(final RotOp toAbsolute) {
     if (isAbsolute() && toAbsolute == RotOp.A) {
       return;
     }
@@ -171,7 +160,7 @@ public class BeaconScanner {
     return readings.stream().collect(toMap(Function.identity(), this::vectorise));
   }
 
-  public List<BeaconReading> vectorise(final BeaconReading reading) {
+  List<BeaconReading> vectorise(final BeaconReading reading) {
     return readings.stream()
                    .filter(not(reading::equals))
                    .map(reading::vectorise)
@@ -179,14 +168,27 @@ public class BeaconScanner {
   }
 
 
-  public int getId() {
+  int getId() {
     return id;
   }
 
-  public BeaconReading getActualPosition() {
+  BeaconReading getActualPosition() {
     return id == 0
-           ? new BeaconReading(0, 0, 0)
+           ? ABSOLUTE
            : actualPosition;
+  }
+
+  private static Function<BeaconReading, BeaconReading> findDiffOp(final BeaconReading b1,
+                                                                   final BeaconReading b2) {
+
+    final var xDiff = b1.getX() - b2.getX();
+    final var yDiff = b1.getY() - b2.getY();
+    final var zDiff = b1.getZ() - b2.getZ();
+
+    return beacon -> new BeaconReading(beacon.getX() + xDiff,
+                                       beacon.getY() + yDiff,
+                                       beacon.getZ() + zDiff);
+
   }
 
   private enum RotOp {
@@ -221,7 +223,7 @@ public class BeaconScanner {
       this.op = op;
     }
 
-    public Function<BeaconReading, BeaconReading> getOp() {
+    private Function<BeaconReading, BeaconReading> getOp() {
       return op;
     }
 

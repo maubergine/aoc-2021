@@ -2,17 +2,19 @@ package com.mariusrubin.aoc.twentythree;
 
 import static com.mariusrubin.aoc.twentythree.AmphipodType.fromLetter;
 import static com.mariusrubin.aoc.twentythree.AmphipodType.isRoomPosition;
+import static com.mariusrubin.aoc.twentythree.MoveCostCalculator.calculateCost;
 import static java.lang.System.lineSeparator;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingLong;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,17 +30,19 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class AmphipodMover {
+class AmphipodMover {
 
-  private static final Pattern AMPHIPOD = Pattern.compile("#([A-D])#([A-D])#([A-D])#([A-D])#");
+  private static final Pattern AMPHIPOD       = Pattern.compile("#([A-D])#([A-D])#([A-D])#([A-D])#");
+  private static final int     HALLWAY_LENGTH = 11;
 
   private final List<Amphipod>          starting = new ArrayList<>();
-  private       List<Amphipod>          current;
-  private       Set<Integer>            done     = new LinkedHashSet<>();
+  private final Set<Integer>            done     = new HashSet<>();
   private final Map<AmphipodType, Long> costThresholds;
   private final int                     bottomY;
 
-  public AmphipodMover(final List<String> input) {
+  private List<Amphipod> current;
+
+  AmphipodMover(final List<String> input) {
     final var rows = input.stream().filter(AMPHIPOD.asPredicate()).toList();
     bottomY = rows.size();
     IntStream.range(0, rows.size())
@@ -47,7 +51,7 @@ public class AmphipodMover {
     costThresholds = buildThresholds();
   }
 
-  public long calculateLowestEnergy() {
+  long calculateLowestEnergy() {
 
     final var availableMoves = new PriorityQueue<List<Move>>(new MoveCostComparator());
     availableMoves.addAll(availableMoves(Collections.emptyList()));
@@ -59,25 +63,32 @@ public class AmphipodMover {
       //Reset the status then execute the path until the next set of moves becomes available
       current = reset();
       final var next = availableMoves.poll();
-      doMoves(next);
-      final var afterExec = availableMoves(next);
-      if (afterExec.isEmpty()) {
-        //Either all Amphipods are now happy, or this is a dead end.
-        if (allAmphipodsInCorrectRoom()) {
-          cheapest = next;
+      if (next != null) {
+        doMoves(next);
+        final var afterExec = availableMoves(next);
+        if (afterExec.isEmpty()) {
+          //Either all Amphipods are now happy, or this is a dead end.
+          if (allAmphipodsInCorrectRoom()) {
+            cheapest = next;
+          }
+        } else {
+          availableMoves.addAll(afterExec);
         }
-      } else {
-        availableMoves.addAll(afterExec);
       }
 
     }
 
+    if (cheapest == null) {
+      throw new IllegalStateException("Unable to find way of putting all amphipods in correct rooms");
+    }
+
     return calculateCost(cheapest);
+
   }
 
   private Map<AmphipodType, Long> buildThresholds() {
     return simpleSolve().collect(groupingBy(Move::type,
-                                            summingLong(AmphipodMover::calculateCost)));
+                                            summingLong(move -> calculateCost(move) * 2 / 3)));
   }
 
   private Stream<Move> simpleSolve() {
@@ -94,27 +105,6 @@ public class AmphipodMover {
 
   }
 
-  private static long findCheapest(final Collection<? extends Collection<Move>> moves) {
-    return moves.stream()
-                .mapToLong(AmphipodMover::calculateCost)
-                .min()
-                .orElseThrow();
-  }
-
-  private static long calculateCost(final Collection<Move> moves) {
-    return moves.stream()
-                .mapToLong(AmphipodMover::calculateCost)
-                .sum();
-  }
-
-  private static long calculateCost(final Move move) {
-    return calculateStepCount(move) * move.type().getEnergy();
-  }
-
-  private static long calculateStepCount(final Move move) {
-    return Math.abs(move.to().x() - move.from().x()) + move.from().y() + move.to().y();
-  }
-
   private List<Amphipod> reset() {
     return starting.stream()
                    .map(Amphipod::new)
@@ -128,9 +118,9 @@ public class AmphipodMover {
 
   private void doMoves(final List<Move> moves) {
     moves.forEach(move -> {
-      final var amphipod = amphipodAtPosition(move.from.x(), move.from.y()).stream()
-                                                                           .findAny()
-                                                                           .orElseThrow();
+      final var amphipod = amphipodAtPosition(move.from().x(), move.from().y()).stream()
+                                                                               .findAny()
+                                                                               .orElseThrow();
       amphipod.setPosition(move.to());
 
     });
@@ -153,7 +143,7 @@ public class AmphipodMover {
 
     final var roomMoves = availableMoves.stream()
                                         .filter(move -> move.to().y() > 0)
-                                        .collect(Collectors.toCollection(LinkedList::new));
+                                        .toList();
 
     //Prioritise completing rooms over other moves
     if (roomMoves.isEmpty()) {
@@ -169,7 +159,7 @@ public class AmphipodMover {
                      .filter(this::withinCostThreshold)
                      .map(move -> combine(previous, move))
                      .filter(updated -> !done.contains(updated.hashCode()))
-                     .collect(Collectors.toCollection(LinkedList::new));
+                     .toList();
   }
 
   private boolean withinCostThreshold(final Move move) {
@@ -368,7 +358,7 @@ public class AmphipodMover {
   }
 
   private String hallway() {
-    return IntStream.range(0, 11)
+    return IntStream.range(0, HALLWAY_LENGTH)
                     .mapToObj(i -> {
                       final var inHallway = current.stream()
                                                    .filter(a -> a.getY() == 0)
@@ -393,11 +383,10 @@ public class AmphipodMover {
 
   }
 
-  private record Move(Coordinate from, Coordinate to, AmphipodType type) {
+  private static class MoveCostComparator implements Comparator<Collection<Move>>, Serializable {
 
-  }
-
-  private class MoveCostComparator implements Comparator<Collection<Move>> {
+    @Serial
+    private static final long serialVersionUID = 859164798587483199L;
 
     @Override
     public int compare(final Collection<Move> o1, final Collection<Move> o2) {

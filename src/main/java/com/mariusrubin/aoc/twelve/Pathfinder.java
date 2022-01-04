@@ -16,20 +16,20 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class Pathfinder {
+class Pathfinder {
 
-  private static final Pattern SPLIT = Pattern.compile("-");
-
+  private static final Pattern SPLIT             = Pattern.compile("-");
+  private static final int     DEFAULT_MAX_VISIT = 1;
 
   private final Map<String, Cave> vertices;
   private final List<Edge>        edges;
   private final int               smallCaveMaxVisit;
 
-  public Pathfinder(final List<String> inputData) {
-    this(inputData, 1);
+  Pathfinder(final List<String> inputData) {
+    this(inputData, DEFAULT_MAX_VISIT);
   }
 
-  public Pathfinder(final List<String> inputData, final int smallCaveMaxVisit) {
+  Pathfinder(final List<String> inputData, final int smallCaveMaxVisit) {
 
     this.smallCaveMaxVisit = smallCaveMaxVisit;
 
@@ -47,11 +47,11 @@ public class Pathfinder {
                      .toList();
   }
 
-  public int countPaths() {
+  int countPaths() {
     return findPaths().size();
   }
 
-  public List<String> findPaths() {
+  List<String> findPaths() {
 
     final var openPaths     = new ArrayList<List<Cave>>();
     final var completePaths = new ArrayList<List<Cave>>();
@@ -136,7 +136,6 @@ public class Pathfinder {
     private boolean isSmall() {
       return name.toLowerCase().equals(name);
     }
-
 
     private boolean isStart() {
       return START.equals(name);

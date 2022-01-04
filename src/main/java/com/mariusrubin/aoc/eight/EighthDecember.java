@@ -4,6 +4,7 @@ import static java.lang.System.lineSeparator;
 
 import com.mariusrubin.aoc.util.Executor;
 import com.mariusrubin.aoc.util.FileLoader;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
@@ -21,15 +22,17 @@ public class EighthDecember implements Callable<Integer> {
   @Override
   public Integer call() {
 
-    final var analyser  = new DisplayAnalyser();
     final var inputData = new FileLoader(DISPLAY_RECORDS).allLines();
 
-    System.out.printf("Number of times 1,4,7,8 appear: %d%s",
-                      analyser.countInstancesOf(new int[]{1, 4, 7, 8}, inputData),
+    final int[] lookFor = {1, 4, 7, 8};
+
+    System.out.printf("Number of times %s appear: %d%s",
+                      Arrays.toString(lookFor),
+                      DisplayAnalyser.countInstancesOf(lookFor, inputData),
                       lineSeparator());
 
     System.out.printf("Summed output: %d%s",
-                      analyser.sumOutput(inputData),
+                      DisplayAnalyser.sumOutput(inputData),
                       lineSeparator());
 
     return Executor.SUCCESS;

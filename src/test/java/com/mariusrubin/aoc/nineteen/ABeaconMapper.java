@@ -26,11 +26,6 @@ public class ABeaconMapper {
 
 
   @Test
-  public int getManhattanDistance() {
-    return 0;
-  }
-
-  @Test
   public void shouldCountUniqueBeacons() {
     assertThat(underTest.countBeacons()).isEqualTo(79);
   }

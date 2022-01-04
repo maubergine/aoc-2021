@@ -7,13 +7,13 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class InefficientCrabArmada extends AbstractCrabArmada {
+class InefficientCrabArmada extends AbstractCrabArmada {
 
-  public InefficientCrabArmada(final int[] initialPositions) {
+  InefficientCrabArmada(final int[] initialPositions) {
     super(initialPositions);
   }
 
-  public InefficientCrabArmada(final List<Integer> initialPositions) {
+  InefficientCrabArmada(final List<Integer> initialPositions) {
     super(initialPositions);
   }
 

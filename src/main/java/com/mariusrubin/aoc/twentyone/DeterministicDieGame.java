@@ -10,11 +10,11 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class DeterministicDieGame extends AbstractDieGame {
+class DeterministicDieGame extends AbstractDieGame {
 
   private static final int WINNING_SCORE = 1000;
 
-  public DeterministicDieGame(final List<String> input) {
+  DeterministicDieGame(final List<String> input) {
     super(input);
   }
 
@@ -39,7 +39,6 @@ public class DeterministicDieGame extends AbstractDieGame {
            * result.rolls();
   }
 
-
   private StateRoll runGame() {
 
     final var dieValue  = new AtomicInteger(1);
@@ -50,21 +49,18 @@ public class DeterministicDieGame extends AbstractDieGame {
                                                           0,
                                                           0));
 
-    IntStream.iterate(0, i -> isInProgress(state.get()), i -> (i + 1) % 2).forEach(player -> {
+    IntStream.iterate(0, i -> isInProgress(state.get()), i -> (i + 1) % 2)
+             .mapToObj(AbstractDieGame::functionFromFlag)
+             .forEach(update -> {
+               final var dieRollTotal = IntStream.range(0, MAX_ROLLS)
+                                                 .map(i -> dieValue.getAndIncrement())
+                                                 .sum();
 
-      final BiFunction<GameState, Integer, GameState> update = player == 0
-                                                               ? GameState::updateOne
-                                                               : GameState::updateTwo;
+               diceRolls.addAndGet(MAX_ROLLS);
 
-      final var dieRollTotal = IntStream.range(0, 3)
-                                        .map(i -> dieValue.getAndIncrement())
-                                        .sum();
+               state.set(update.apply(state.get(), dieRollTotal));
 
-      diceRolls.addAndGet(3);
-
-      state.set(update.apply(state.get(), dieRollTotal));
-
-    });
+             });
 
     return new StateRoll(state.get(), diceRolls.get());
 
@@ -73,6 +69,5 @@ public class DeterministicDieGame extends AbstractDieGame {
   private record StateRoll(GameState state, int rolls) {
 
   }
-
 
 }

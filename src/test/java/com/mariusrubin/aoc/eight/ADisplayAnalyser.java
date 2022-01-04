@@ -1,7 +1,6 @@
 package com.mariusrubin.aoc.eight;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -24,22 +23,16 @@ public class ADisplayAnalyser {
       egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
       gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce""";
 
-  private DisplayAnalyser underTest;
-
-  @BeforeEach
-  public void init() {
-    underTest = new DisplayAnalyser();
-  }
-
   @Test
   public void shouldCountDigitsInInput() {
-    final var interestingDigits = underTest.countInstancesOf(LOOK_FOR, INPUT.lines().toList());
+    final var interestingDigits = DisplayAnalyser.countInstancesOf(LOOK_FOR,
+                                                                   INPUT.lines().toList());
     Assertions.assertThat(interestingDigits).isEqualTo(26);
   }
 
   @Test
   public void shouldSumOutputs() {
-    final long outputTotal = underTest.sumOutput(INPUT.lines().toList());
+    final long outputTotal = DisplayAnalyser.sumOutput(INPUT.lines().toList());
     Assertions.assertThat(outputTotal).isEqualTo(61229);
   }
 

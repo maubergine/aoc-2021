@@ -7,16 +7,16 @@ import java.util.StringJoiner;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class Basin {
+class Basin {
 
   private final int[] members;
 
-  public Basin(final int[] members) {
+  Basin(final int[] members) {
     this.members = members.clone();
     Arrays.sort(this.members);
   }
 
-  public int getSize() {
+  int getSize() {
     return members.length;
   }
 

@@ -7,23 +7,25 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class CavernScanner {
+class CavernScanner {
+
+  private static final int RISK_THRESHOLD = 10;
 
   private final int range;
 
-  public CavernScanner() {
+  CavernScanner() {
     this(1);
   }
 
-  public CavernScanner(final int range) {
+  CavernScanner(final int range) {
     this.range = range;
   }
 
-  public int[][] scanCavern(final String filePath) {
+  int[][] scanCavern(final String filePath) {
     return scanCavern(new FileLoader(filePath).integerArray());
   }
 
-  public int[][] scanCavern(final int[][] source) {
+  int[][] scanCavern(final int[][] source) {
 
     if (range < 2) {
       return source;
@@ -93,7 +95,7 @@ public class CavernScanner {
 
   private static int calculateRisk(final int sourceValue, final int step) {
     final var risk = sourceValue + step;
-    return risk < 10 ? risk : Math.abs(9 - risk);
+    return risk < RISK_THRESHOLD ? risk : Math.abs(RISK_THRESHOLD - 1 - risk);
   }
 
 }

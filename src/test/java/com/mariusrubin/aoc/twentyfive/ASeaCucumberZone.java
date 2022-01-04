@@ -22,7 +22,7 @@ public class ASeaCucumberZone {
         v.....>
         ......>
         .......
-        ..vvv..       
+        ..vvv..
         """;
     underTest = new SeaCucumberZone(input.lines().toList());
     assertThat(underTest.states(4)).containsExactly(

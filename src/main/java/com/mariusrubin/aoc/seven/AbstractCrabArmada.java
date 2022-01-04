@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public abstract class AbstractCrabArmada implements CrabArmada {
+abstract class AbstractCrabArmada implements CrabArmada {
 
   private final int[] initialPositions;
 

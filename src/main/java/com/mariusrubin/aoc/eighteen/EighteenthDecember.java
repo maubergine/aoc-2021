@@ -21,13 +21,14 @@ public class EighteenthDecember implements Callable<Integer> {
   @Override
   public Integer call() {
 
-    final var calculator = new SnailfishCalculator();
-    final var inputs     = new FileLoader(NUMBERS).allLines();
+    final var inputs = new FileLoader(NUMBERS).allLines();
 
-    System.out.printf("Magnitude: %d%s", calculator.calculateMagnitude(inputs), lineSeparator());
+    System.out.printf("Magnitude: %d%s",
+                      SnailfishCalculator.calculateMagnitude(inputs),
+                      lineSeparator());
 
     System.out.printf("Largest magnitude: %d%s",
-                      calculator.calculateLargestMagnitude(inputs),
+                      SnailfishCalculator.calculateLargestMagnitude(inputs),
                       lineSeparator());
 
     return Executor.SUCCESS;

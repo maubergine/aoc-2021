@@ -23,7 +23,7 @@ public class ThirdDecember implements Callable<Integer> {
 
     final var readings = new FileLoader(READINGS).allBinaryIntegers();
 
-    final var monitor = new PowerMonitor(readings, 12);
+    final var monitor = new PowerMonitor(readings);
 
     System.out.printf("Monitor power reading: %d%s",
                       monitor.getPowerConsumption(),

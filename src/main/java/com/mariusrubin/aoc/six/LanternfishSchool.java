@@ -11,14 +11,14 @@ import java.util.stream.LongStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class LanternfishSchool {
+class LanternfishSchool {
 
   private static final long SPAWN_KEY = 8L;
   private static final long RESET_KEY = 6L;
 
   private final Map<Long, Long> fishBuckets;
 
-  public LanternfishSchool(final List<Integer> timers) {
+  LanternfishSchool(final List<Integer> timers) {
     fishBuckets = timers.stream()
                         .collect(Collectors.toMap(i -> (long) i,
                                                   i -> 1L,
@@ -28,7 +28,7 @@ public class LanternfishSchool {
     LongStream.rangeClosed(0, 8).forEach(l -> fishBuckets.putIfAbsent(l, 0L));
   }
 
-  public void passDays(final int days) {
+  void passDays(final int days) {
     IntStream.range(0, days)
              .sequential()
              .mapToObj(i -> Map.copyOf(fishBuckets)).forEach(temp -> {
@@ -43,7 +43,7 @@ public class LanternfishSchool {
   }
 
 
-  public long lanternFishCount() {
+  long lanternFishCount() {
     return fishBuckets.values().stream().mapToLong(l -> l).sum();
   }
 

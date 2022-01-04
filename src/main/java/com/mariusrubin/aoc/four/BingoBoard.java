@@ -12,23 +12,29 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class BingoBoard {
+class BingoBoard {
 
-  private static final int LINE_LENGTH = 5;
+  static final int INITIAL_NUMBER = -1;
+  static final int LINE_LENGTH    = 5;
 
   private final List<BingoLine> horizontals;
   private final List<BingoLine> verticals;
-  private       int             winningNumber = -1;
 
-  public BingoBoard(final int[][] lines) {
+  private int winningNumber = INITIAL_NUMBER;
+
+  BingoBoard(final int[][] lines) {
     this(Arrays.stream(lines)
                .map(IntStream::of)
                .map(IntStream::boxed)
                .map(Stream::toList));
   }
 
-  public BingoBoard(final List<List<Integer>> lines) {
+  BingoBoard(final List<List<Integer>> lines) {
     this(lines.stream());
+  }
+
+  public int getNumberAtPosition(final int x, final int y) {
+    return horizontals.get(LINE_LENGTH - y).getNumberAtPosition(x - 1);
   }
 
   private BingoBoard(final Stream<List<Integer>> lines) {
@@ -45,21 +51,17 @@ public class BingoBoard {
                     .collect(Collectors.toList());
   }
 
-  public int getNumberAtPosition(final int x, final int y) {
-    return horizontals.get(LINE_LENGTH - y).getNumberAtPosition(x - 1);
-  }
-
-  public int call(final int number) {
+  int call(final int number) {
     return Stream.concat(horizontals.stream(), verticals.stream())
                  .map(bingo -> bingo.call(number))
-                 .filter(i -> i >= 0)
+                 .filter(i -> i > INITIAL_NUMBER)
                  .peek(i -> winningNumber = i)
                  .findAny()
-                 .orElse(-1);
+                 .orElse(INITIAL_NUMBER);
   }
 
-  public int getScore() {
-    if (winningNumber < 0) {
+  int getScore() {
+    if (winningNumber == INITIAL_NUMBER) {
       return winningNumber;
     }
 
@@ -70,6 +72,8 @@ public class BingoBoard {
   }
 
   private static final class BingoLine {
+
+    private static final int LINE_LENGTH = 5;
 
     private final List<Integer> numbers;
     private final List<Integer> matches = new ArrayList<>(LINE_LENGTH);

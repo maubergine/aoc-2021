@@ -29,6 +29,7 @@ public class TwentyThirdDecember implements Callable<Integer> {
 
     input.add(3, "#D#B#A#C#");
     input.add(3, "#D#C#B#A#");
+
     mover = new AmphipodMover(input);
     System.out.printf("Lowest energy route for complex: %d%s",
                       mover.calculateLowestEnergy(),

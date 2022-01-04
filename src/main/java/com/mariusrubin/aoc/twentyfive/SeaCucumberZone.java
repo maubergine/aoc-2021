@@ -13,14 +13,14 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class SeaCucumberZone {
+class SeaCucumberZone {
 
-  private SeaCucumber[][] cucumbers;
+  private final SeaCucumber[][] cucumbers;
 
   private final int lengthMax;
   private final int rowMax;
 
-  public SeaCucumberZone(final List<String> inputs) {
+  SeaCucumberZone(final List<String> inputs) {
 
     lengthMax = inputs.size();
     rowMax = inputs.get(0).length();
@@ -32,14 +32,12 @@ public class SeaCucumberZone {
              .forEach(y -> {
                final var row = inputs.get(y);
                IntStream.range(0, rowMax)
-                        .forEach(x -> cucumbers[y][x] = SeaCucumber.fromString(row.substring(x,
-                                                                                             x
-                                                                                             + 1)));
+                        .forEach(x -> cucumbers[y][x] = SeaCucumber.from(row.substring(x, x + 1)));
              });
 
   }
 
-  public int countMaxMoves() {
+  int countMaxMoves() {
 
     final var previous = new AtomicLong(Arrays.deepHashCode(cucumbers));
     final var current  = new AtomicLong(previous.get() * -1);
@@ -56,7 +54,7 @@ public class SeaCucumberZone {
 
   }
 
-  public Stream<String> states(final int howMany) {
+  Stream<String> states(final int howMany) {
     return IntStream.range(0, howMany)
                     .mapToObj(this::step)
                     .map(this::stringify);
@@ -80,44 +78,46 @@ public class SeaCucumberZone {
     //Do horizontal
     IntStream.range(0, lengthMax)
              .sequential()
-             .forEach(y -> {
-               final var row = cucumbers[y];
-               IntStream.range(0, rowMax)
-                        .forEach(x -> {
-                          if (row[x] != null && !row[x].hasMoved() && row[x].isHorizontal()) {
-                            final var next = x + 1 == rowMax ? 0 : x + 1;
-                            if (row[next] == null) {
-                              row[next] = row[x];
-                              row[next].move();
-                              row[x] = new SeaCucumber(SeaCucumberType.PHANTOM);
-                            }
-                          }
-                        });
-             });
+             .mapToObj(y -> cucumbers[y])
+             .forEach(this::doHorizontal);
 
     reset();
 
     //Do vertical
     IntStream.range(0, lengthMax)
              .sequential()
-             .forEach(y -> {
-               final var row = cucumbers[y];
-               IntStream.range(0, rowMax)
-                        .forEach(x -> {
-                          if (row[x] != null && !row[x].hasMoved() && row[x].isVertical()) {
-                            final var next = y + 1 == lengthMax ? 0 : y + 1;
-                            if (cucumbers[next][x] == null) {
-                              cucumbers[next][x] = row[x];
-                              cucumbers[next][x].move();
-                              row[x] = new SeaCucumber(SeaCucumberType.PHANTOM);
-                            }
-                          }
-                        });
-             });
+             .forEach(this::doVertical);
 
     reset();
 
     return cucumbers;
+  }
+
+  private void doVertical(final int y) {
+    final var row = cucumbers[y];
+    IntStream.range(0, rowMax)
+             .filter(x -> row[x] != null && !row[x].hasMoved() && row[x].isVertical())
+             .forEach(x -> {
+               final var next = y + 1 == lengthMax ? 0 : y + 1;
+               if (cucumbers[next][x] == null) {
+                 cucumbers[next][x] = row[x];
+                 cucumbers[next][x].move();
+                 row[x] = new SeaCucumber(SeaCucumberType.PHANTOM);
+               }
+             });
+  }
+
+  private void doHorizontal(final SeaCucumber[] row) {
+    IntStream.range(0, rowMax)
+             .filter(x -> row[x] != null && !row[x].hasMoved() && row[x].isHorizontal())
+             .forEach(x -> {
+               final var next = x + 1 == rowMax ? 0 : x + 1;
+               if (row[next] == null) {
+                 row[next] = row[x];
+                 row[next].move();
+                 row[x] = new SeaCucumber(SeaCucumberType.PHANTOM);
+               }
+             });
   }
 
 
@@ -138,7 +138,7 @@ public class SeaCucumberZone {
                  .collect(Collectors.joining(System.lineSeparator()));
   }
 
-  private static class SeaCucumber {
+  private static final class SeaCucumber {
 
     private final SeaCucumberType type;
     private       boolean         moved;
@@ -147,7 +147,7 @@ public class SeaCucumberZone {
       this.type = type;
     }
 
-    private static SeaCucumber fromString(final String value) {
+    private static SeaCucumber from(final String value) {
       return SeaCucumberType.fromString(value).map(SeaCucumber::new).orElse(null);
     }
 

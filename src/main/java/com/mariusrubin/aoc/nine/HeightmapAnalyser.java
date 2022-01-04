@@ -12,41 +12,44 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class HeightmapAnalyser {
+class HeightmapAnalyser {
 
-  private static final int MAX_HEIGHT = 9;
+  private static final int MAX_HEIGHT      = 9;
+  private static final int MAX_TO_MULTIPLY = 3;
 
   private final int[][] heightMap;
   private final int[][] visited;
   private final int     lastRow;
   private final int     lastColumn;
 
-  public HeightmapAnalyser(final int[][] heightMap) {
+  HeightmapAnalyser(final int[][] heightMap) {
     this.heightMap = heightMap.clone();
     visited = new int[heightMap.length][heightMap[0].length];
     lastRow = heightMap.length - 1;
     lastColumn = heightMap[0].length - 1;
   }
 
-  public int[] findLowPoints() {
+  int[] findLowPoints() {
     return lowPoints().toArray();
   }
 
-  public int calculateRiskLevel() {
+  int calculateRiskLevel() {
     return lowPoints().map(i -> i + 1).sum();
+  }
+
+  int calculateLargestBasin() {
+    final var sizes = basins().mapToInt(Basin::getSize).sorted().toArray();
+    return IntStream.rangeClosed(1, MAX_TO_MULTIPLY)
+                    .map(i -> sizes[sizes.length - i])
+                    .reduce(1, Math::multiplyExact);
+  }
+
+  Set<Basin> findBasins() {
+    return basins().collect(toSet());
   }
 
   private IntStream lowPoints() {
     return rows().flatMap(this::processRow);
-  }
-
-  public Set<Basin> findBasins() {
-    return basins().collect(toSet());
-  }
-
-  public int calculateLargestBasin() {
-    final var sizes = basins().mapToInt(Basin::getSize).sorted().toArray();
-    return sizes[sizes.length - 3] * sizes[sizes.length - 2] * sizes[sizes.length - 1];
   }
 
   private Stream<Basin> basins() {
@@ -166,11 +169,11 @@ public class HeightmapAnalyser {
     return visited[row][column] < 1 && heightMap[row][column] < 9;
   }
 
-  private boolean isNotFirstColumn(final Step step) {
+  private static boolean isNotFirstColumn(final Step step) {
     return step.column() > 0;
   }
 
-  private boolean isNotFirstRow(final Step step) {
+  private static boolean isNotFirstRow(final Step step) {
     return step.row() > 0;
   }
 

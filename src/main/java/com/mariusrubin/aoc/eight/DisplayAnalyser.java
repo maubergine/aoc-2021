@@ -10,12 +10,28 @@ import java.util.stream.Collectors;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class DisplayAnalyser {
+final class DisplayAnalyser {
 
   private static final Pattern IO_SPLIT   = Pattern.compile(" \\| ");
   private static final Pattern ITEM_SPLIT = Pattern.compile(" ");
 
-  private final DisplayMatcher matcher = new DisplayMatcher();
+  private DisplayAnalyser() {
+  }
+
+  static long countInstancesOf(final int[] lookFor, final List<String> inputs) {
+    final var searchSet = Arrays.stream(lookFor).boxed().collect(Collectors.toSet());
+    return inputs.stream()
+                 .mapToLong(input -> countInstancesOf(searchSet, input))
+                 .sum();
+  }
+
+  static long sumOutput(final List<String> inputs) {
+    return inputs.stream()
+                 .map(DisplayAnalyser::toOutputPair)
+                 .map(DisplayAnalyser::toCompleteOutput)
+                 .mapToInt(Integer::parseInt)
+                 .sum();
+  }
 
   private static PatternOutputPair toOutputPair(final String input) {
     final var splits  = IO_SPLIT.split(input);
@@ -25,34 +41,19 @@ public class DisplayAnalyser {
     return new PatternOutputPair(pattern, output);
   }
 
-  public long countInstancesOf(final int[] lookFor, final List<String> inputs) {
-    final var searchSet = Arrays.stream(lookFor).boxed().collect(Collectors.toSet());
-    return inputs.stream()
-                 .mapToLong(input -> countInstancesOf(searchSet, input))
-                 .sum();
-  }
-
-  public long sumOutput(final List<String> inputs) {
-    return inputs.stream()
-                 .map(DisplayAnalyser::toOutputPair)
-                 .map(this::toCompleteOutput)
-                 .mapToInt(Integer::parseInt)
-                 .sum();
-  }
-
-  private String toCompleteOutput(final PatternOutputPair patternOutputPair) {
-    final var display = matcher.findDisplayMatching(patternOutputPair.pattern());
+  private static String toCompleteOutput(final PatternOutputPair patternOutputPair) {
+    final var display = DisplayMatcher.findDisplayMatching(patternOutputPair.pattern());
     return ITEM_SPLIT.splitAsStream(patternOutputPair.output())
                      .map(display::convert)
                      .map(String::valueOf)
                      .collect(Collectors.joining());
   }
 
-  private long countInstancesOf(final Set<Integer> searchSet, final String input) {
+  private static long countInstancesOf(final Set<Integer> searchSet, final String input) {
 
     final PatternOutputPair pop = toOutputPair(input);
 
-    final var display = matcher.findDisplayMatching(pop.pattern());
+    final var display = DisplayMatcher.findDisplayMatching(pop.pattern());
 
     return ITEM_SPLIT.splitAsStream(pop.output())
                      .mapToInt(display::convert)

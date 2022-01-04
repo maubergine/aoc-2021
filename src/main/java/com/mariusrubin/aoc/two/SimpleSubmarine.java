@@ -4,7 +4,7 @@ package com.mariusrubin.aoc.two;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class SimpleSubmarine extends AbstractSubmarine {
+class SimpleSubmarine extends AbstractSubmarine {
 
   @Override
   public void forward(final int value) {

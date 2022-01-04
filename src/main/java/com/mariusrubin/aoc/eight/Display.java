@@ -14,24 +14,39 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class Display {
+class Display {
 
   private final Map<Character, Character> wiring;
   private final Map<String, WiredSegment> wiredSegments;
 
-  public Display(final String seed) {
+  Display(final String seed) {
     wiring = IntStream.rangeClosed('a', 'g')
                       .mapToObj(i -> (char) i)
                       .collect(toMap(Function.identity(), c -> seed.charAt(Math.abs('a' - c))));
     wiredSegments = generateWiredSegments();
   }
 
-  public Map<String, WiredSegment> getWiredSegments() {
+  Map<String, WiredSegment> getWiredSegments() {
     return Collections.unmodifiableMap(wiredSegments);
   }
 
-  public int convert(final String input) {
+  int convert(final String input) {
     return wiredSegments.get(alphabetise(input)).number();
+  }
+
+  String toWires(final String segments) {
+    return segments.chars()
+                   .mapToObj(i -> String.valueOf(wiring.get((char) i)))
+                   .sorted()
+                   .collect(Collectors.joining());
+  }
+
+  String segmentPattern() {
+    return wiredSegments.values()
+                        .stream()
+                        .map(WiredSegment::wires)
+                        .sorted()
+                        .collect(Collectors.joining(" "));
   }
 
   private Map<String, WiredSegment> generateWiredSegments() {
@@ -40,19 +55,8 @@ public class Display {
                  .collect(toMap(WiredSegment::wires, Function.identity()));
   }
 
-  public String toWires(final String segments) {
-    return segments.chars()
-                   .mapToObj(i -> String.valueOf(wiring.get((char) i)))
-                   .sorted()
-                   .collect(Collectors.joining());
-  }
+  record WiredSegment(int number, String wires) {
 
-  public String segmentPattern() {
-    return wiredSegments.values()
-                        .stream()
-                        .map(WiredSegment::wires)
-                        .sorted()
-                        .collect(Collectors.joining(" "));
   }
 
   private enum SegmentPattern {
@@ -66,18 +70,14 @@ public class Display {
     SEVEN(7, "acf"),
     EIGHT(8, "abcdefg"),
     NINE(9, "abcdfg");
+    private final int actual;
 
-    private final int    actual;
     private final String segments;
 
     SegmentPattern(final int actual, final String segments) {
       this.actual = actual;
       this.segments = segments;
     }
-
-  }
-
-  public record WiredSegment(int number, String wires) {
 
   }
 

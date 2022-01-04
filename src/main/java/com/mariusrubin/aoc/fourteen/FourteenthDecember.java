@@ -25,12 +25,16 @@ public class FourteenthDecember implements Callable<Integer> {
 
     final var polymeriser = new Polymeriser(template);
 
-    System.out.printf("Output after 10 steps: %d%s",
-                      polymeriser.calculateOutput(10),
+    final var firstStepCount = 10;
+    System.out.printf("Output after %d steps: %d%s",
+                      firstStepCount,
+                      polymeriser.calculateOutput(firstStepCount),
                       lineSeparator());
 
-    System.out.printf("Output after 40 steps: %d%s",
-                      polymeriser.calculateOutput(40),
+    final var secondStepCount = 40;
+    System.out.printf("Output after %d steps: %d%s",
+                      secondStepCount,
+                      polymeriser.calculateOutput(secondStepCount),
                       lineSeparator());
 
     return Executor.SUCCESS;

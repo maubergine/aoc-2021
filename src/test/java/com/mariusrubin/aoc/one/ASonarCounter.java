@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -13,19 +12,12 @@ import org.junit.jupiter.api.Test;
  */
 public class ASonarCounter {
 
-  private SonarCounter underTest;
-
-  @BeforeEach
-  public void initEach() {
-    underTest = new SonarCounter();
-  }
-
   @Test
   public void shouldCountItemIncreases() {
 
     final List<Integer> items = Arrays.asList(1, 2, 1, 3, 5, 5, 6, 3, 4);
 
-    assertThat(underTest.countIncreases(items)).isEqualTo(5);
+    assertThat(SonarCounter.countIncreases(items)).isEqualTo(5);
 
   }
 
@@ -43,7 +35,7 @@ public class ASonarCounter {
                                               260,
                                               263);
 
-    assertThat(underTest.countIncreases(items, 3)).isEqualTo(5);
+    assertThat(SonarCounter.countIncreases(items, 3)).isEqualTo(5);
 
   }
 

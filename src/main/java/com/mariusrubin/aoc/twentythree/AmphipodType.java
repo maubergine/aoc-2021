@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public enum AmphipodType {
+enum AmphipodType {
   AMBER(1, 2),
   BRONZE(10, 4),
   COPPER(100, 6),
@@ -20,22 +20,22 @@ public enum AmphipodType {
     this.roomPosition = roomPosition;
   }
 
-  public static AmphipodType fromLetter(final String letter) {
+  static AmphipodType fromLetter(final String letter) {
     return Arrays.stream(AmphipodType.values())
                  .filter(type -> type.name().startsWith(letter.substring(0, 1)))
                  .findAny()
                  .orElseThrow();
   }
 
-  public int getRoomPosition() {
+  int getRoomPosition() {
     return roomPosition;
   }
 
-  public int getEnergy() {
+  int getEnergy() {
     return energy;
   }
 
-  public static boolean isRoomPosition(final int position) {
+  static boolean isRoomPosition(final int position) {
     return Arrays.stream(AmphipodType.values())
                  .mapToInt(AmphipodType::getRoomPosition)
                  .anyMatch(i -> i == position);

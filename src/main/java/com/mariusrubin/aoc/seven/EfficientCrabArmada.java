@@ -6,13 +6,13 @@ import java.util.List;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class EfficientCrabArmada extends AbstractCrabArmada {
+class EfficientCrabArmada extends AbstractCrabArmada {
 
-  public EfficientCrabArmada(final int[] initialPositions) {
+  EfficientCrabArmada(final int[] initialPositions) {
     super(initialPositions);
   }
 
-  public EfficientCrabArmada(final List<Integer> initialPositions) {
+  EfficientCrabArmada(final List<Integer> initialPositions) {
     super(initialPositions);
   }
 

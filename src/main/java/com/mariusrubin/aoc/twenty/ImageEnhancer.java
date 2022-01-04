@@ -14,13 +14,14 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class ImageEnhancer {
+class ImageEnhancer {
 
-  private static final String                     PAD = "...";
-  private final        int[]                      algorithm;
-  private final        Function<Integer, Integer> blinkHandler;
+  private static final String PAD = "...";
 
-  public ImageEnhancer(final String algorithm) {
+  private final int[]                      algorithm;
+  private final Function<Integer, Integer> blinkHandler;
+
+  ImageEnhancer(final String algorithm) {
 
     this.algorithm = algorithm.chars()
                               .mapToObj(i -> (char) i)
@@ -35,19 +36,19 @@ public class ImageEnhancer {
     }
   }
 
-  public long countLitCells(final List<String> input, final int times) {
+  long countLitCells(final List<String> input, final int times) {
 
     final var asCharArray = toCharArray(input);
     return countLitCells(asCharArray, times);
 
   }
 
-  public long countLitCells(final char[][] input, final int times) {
+  long countLitCells(final char[][] input, final int times) {
     final var result = enhance(input, times);
     return countLit(result);
   }
 
-  public int[][] enhance(final char[][] input, final int times) {
+  int[][] enhance(final char[][] input, final int times) {
 
     var result = toIntArray(input);
 
@@ -59,21 +60,33 @@ public class ImageEnhancer {
 
   }
 
-  public int[][] enhance(final int[][] input, final int turn) {
+  int[][] enhance(final int[][] input, final int turn) {
     final var start = new Coordinate(-1, -1, -1);
     final var end   = detectEnd(input);
 
     final var output = new int[abs(end.y() - start.y()) + 1][abs(end.x() - start.x()) + 1];
 
-    getRenderTargets(start, end, input).parallel()
-                                       .map(coord -> withValue(coord, input, turn))
-                                       .forEach(coord -> render(coord, output));
+    getRenderTargets(start, end).parallel()
+                                .map(coord -> withValue(coord, input, turn))
+                                .forEach(coord -> render(coord, output));
 
     return output;
 
   }
 
-  public Coordinate withValue(final Coordinate renderTarget, final int[][] input, final int turn) {
+  String enhanceAsString(final char[][] input, final int times) {
+    final var result = enhance(input, times);
+
+    final var topBottomPad = buildPad(result);
+
+    return topBottomPad
+           + lineSeparator()
+           + stringify(result)
+           + lineSeparator()
+           + topBottomPad;
+  }
+
+  private Coordinate withValue(final Coordinate renderTarget, final int[][] input, final int turn) {
 
     final var stringNum = IntStream.rangeClosed(renderTarget.y() - 1, renderTarget.y() + 1)
                                    .sequential()
@@ -85,18 +98,6 @@ public class ImageEnhancer {
 
     return new Coordinate(renderTarget.x(), renderTarget.y(), algorithm[charRef]);
 
-  }
-
-  public String enhanceAsString(final char[][] input, final int times) {
-    final var result = enhance(input, times);
-
-    final var topBottomPad = buildPad(result);
-
-    return topBottomPad
-           + lineSeparator()
-           + stringify(result)
-           + lineSeparator()
-           + topBottomPad;
   }
 
 
@@ -128,7 +129,6 @@ public class ImageEnhancer {
                   .map(String::trim)
                   .map(String::toCharArray)
                   .toArray(char[][]::new);
-
   }
 
   private IntStream processRow(final Coordinate renderTarget,
@@ -144,7 +144,7 @@ public class ImageEnhancer {
   }
 
 
-  public static void render(final Coordinate value, final int[][] into) {
+  private static void render(final Coordinate value, final int[][] into) {
     into[value.y() + 1][value.x() + 1] = value.value();
   }
 
@@ -174,8 +174,7 @@ public class ImageEnhancer {
   }
 
   private static Stream<Coordinate> getRenderTargets(final Coordinate start,
-                                                     final Coordinate end,
-                                                     final int[][] inputs) {
+                                                     final Coordinate end) {
     return IntStream.rangeClosed(start.y(), end.y())
                     .sequential()
                     .mapToObj(y -> IntStream.rangeClosed(start.x(), end.x())
@@ -189,7 +188,7 @@ public class ImageEnhancer {
     return new Coordinate(input[0].length, input.length, -1);
   }
 
-  record Coordinate(int x, int y, int value) {
+  private record Coordinate(int x, int y, int value) {
 
   }
 

@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class PowerMonitor {
+class PowerMonitor {
 
   private final List<Integer> input;
   private final int           maxBits;
@@ -20,19 +20,20 @@ public class PowerMonitor {
   private int oxygenRating   = -1;
   private int scrubberRating = -1;
 
-  public PowerMonitor(final List<Integer> input, final int maxBits) {
+  PowerMonitor(final List<Integer> input) {
+    final var maxValue = input.stream().mapToInt(Integer::intValue).max().orElseThrow();
+    maxBits = (int) (Math.log(maxValue) / Math.log(2) + 1);
     this.input = Collections.unmodifiableList(input);
-    this.maxBits = maxBits;
   }
 
-  private static int majorityMask(final MaskingSummaryStatistics stats) {
+  static int majorityMask(final MaskingSummaryStatistics stats) {
     final double midPoint = (double) stats.getCount() / 2;
     return IntStream.range(0, stats.getCollect().length)
                     .map(i -> (stats.getCollect()[i] >= midPoint ? 1 : 0) * (1 << i))
                     .sum();
   }
 
-  private static int minorityMask(final MaskingSummaryStatistics stats) {
+  static int minorityMask(final MaskingSummaryStatistics stats) {
     final double midPoint = (double) stats.getCount() / 2;
     return IntStream.range(0, stats.getCollect().length)
                     .map(i -> (stats.getCollect()[i] < midPoint ? 1 : 0) * (1 << i))
@@ -89,34 +90,39 @@ public class PowerMonitor {
 
   }
 
-  public int getGammaRate() {
+  int getGammaRate() {
     calculateRates();
     return gammaRate;
   }
 
-  public int getEpsilonRate() {
+  int getEpsilonRate() {
     calculateRates();
     return epsilonRate;
   }
 
-  public int getPowerConsumption() {
+  int getPowerConsumption() {
     calculateRates();
     return gammaRate * epsilonRate;
   }
 
-  public int getOxygenRating() {
+  int getOxygenRating() {
     calculateRates();
     return oxygenRating;
   }
 
-  public int getScrubberRating() {
+  int getScrubberRating() {
     calculateRates();
     return scrubberRating;
   }
 
-  public int getLifeSupportRating() {
+  int getLifeSupportRating() {
     calculateRates();
     return oxygenRating * scrubberRating;
+  }
+
+  private static int maxBits(final List<Integer> input) {
+    final var maxValue = input.stream().mapToInt(Integer::intValue).max().orElseThrow();
+    return (int) (Math.log(maxValue) / Math.log(2) + 1);
   }
 
   private static class MaskingSummaryStatistics extends IntSummaryStatistics {
@@ -147,7 +153,7 @@ public class PowerMonitor {
       }
     }
 
-    public int[] getCollect() {
+    private int[] getCollect() {
       return collect.clone();
     }
 

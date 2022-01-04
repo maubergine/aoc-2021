@@ -8,13 +8,16 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class SnailfishCalculator {
+final class SnailfishCalculator {
 
-  public int calculateMagnitude(final List<String> inputs) {
+  private SnailfishCalculator() {
+  }
+
+  static int calculateMagnitude(final List<String> inputs) {
     return addList(inputs).getMagnitude();
   }
 
-  public int calculateLargestMagnitude(final List<String> inputs) {
+  static int calculateLargestMagnitude(final List<String> inputs) {
 
     return IntStream.range(0, inputs.size())
                     .map(i -> {
@@ -23,7 +26,7 @@ public class SnailfishCalculator {
                                       .filter(j -> j != i)
                                       .mapToObj(inputs::get)
                                       .map(inner -> addList(outer, inner))
-                                      .mapToInt(num -> num.getMagnitude())
+                                      .mapToInt(SnailNumber.magnitude())
                                       .max()
                                       .orElseThrow();
                     })
@@ -31,19 +34,19 @@ public class SnailfishCalculator {
                     .orElseThrow();
   }
 
-  public SnailNumber add(final SnailNumber left, final SnailNumber right) {
+  static SnailNumber add(final SnailNumber left, final SnailNumber right) {
     final var resultant = new SnailNumber(left, right);
     return reduce(resultant);
   }
 
-  public SnailNumber addList(final String... numbers) {
+  static SnailNumber addList(final String... numbers) {
     return addList(Arrays.stream(numbers).toList());
   }
 
-  public SnailNumber addList(final List<String> inputs) {
+  static SnailNumber addList(final List<String> inputs) {
 
     if (inputs.isEmpty()) {
-      return null;
+      throw new IllegalArgumentException("Cannot add empty list");
     }
 
     if (inputs.size() == 1) {
@@ -52,12 +55,12 @@ public class SnailfishCalculator {
 
     return inputs.stream()
                  .map(SnailNumber::new)
-                 .reduce(this::add)
+                 .reduce(SnailfishCalculator::add)
                  .orElseThrow();
 
   }
 
-  public SnailNumber reduce(final SnailNumber number) {
+  static SnailNumber reduce(final SnailNumber number) {
 
     if (number.getLeft().isValue() && number.getRight().isValue()) {
       return number;
@@ -66,12 +69,12 @@ public class SnailfishCalculator {
     var firstToReduce = number.findFirstFourNested();
     var toSplit       = number.findFirstToSplit();
 
-    while (firstToReduce != null || toSplit != null) {
+    while (firstToReduce.isPresent() || toSplit.isPresent()) {
 
-      if (firstToReduce != null) {
-        firstToReduce.doReduce();
+      if (firstToReduce.isPresent()) {
+        firstToReduce.get().doReduce();
       } else {
-        toSplit.doSplit();
+        toSplit.get().doSplit();
       }
 
       firstToReduce = number.findFirstFourNested();

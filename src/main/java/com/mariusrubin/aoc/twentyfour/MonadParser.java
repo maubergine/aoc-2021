@@ -9,12 +9,15 @@ import java.util.regex.Pattern;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class MonadParser {
+final class MonadParser {
 
   private static final Pattern X_OP = Pattern.compile("^add x ([-0-9]+)$");
   private static final Pattern Y_OP = Pattern.compile("^add y ([-0-9]+)$");
 
-  public List<MonadRun> parse(final List<String> inputs) {
+  private MonadParser() {
+  }
+
+  static List<MonadRun> parse(final List<String> inputs) {
 
     final var runs    = new ArrayList<MonadRun>();
     final var toParse = new ArrayList<String>();

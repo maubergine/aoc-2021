@@ -1,6 +1,5 @@
 package com.mariusrubin.aoc.twentytwo;
 
-import static com.mariusrubin.aoc.twentytwo.ReactorCore.CubeState.ON;
 import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class ReactorCore {
+class ReactorCore {
 
   private static final Pattern STEP =
       Pattern.compile(
@@ -22,13 +21,13 @@ public class ReactorCore {
 
   private final List<CubeExtent> rebootSteps;
 
-  public ReactorCore(final List<String> rebootSteps) {
+  ReactorCore(final List<String> rebootSteps) {
     this(rebootSteps, Integer.MAX_VALUE);
   }
 
-  public ReactorCore(final List<String> rebootSteps, final int boundarySize) {
+  ReactorCore(final List<String> rebootSteps, final int boundarySize) {
     final var checkEdge = new Edge(boundarySize * -1, boundarySize);
-    final var checkCube = new CubeExtent(checkEdge, checkEdge, checkEdge, ON);
+    final var checkCube = new CubeExtent(checkEdge, checkEdge, checkEdge, CubeState.ON);
     this.rebootSteps = rebootSteps.stream()
                                   .map(STEP::matcher)
                                   .filter(Matcher::find)
@@ -38,11 +37,11 @@ public class ReactorCore {
 
   }
 
-  public long countOnCubes() {
+  long countOnCubes() {
     return runSteps();
   }
 
-  public long runSteps() {
+  long runSteps() {
 
     final var processed = new ArrayList<CubeExtent>();
 
@@ -55,7 +54,7 @@ public class ReactorCore {
 
       processed.addAll(sects);
 
-      if (cube.getState() == ON) {
+      if (cube.getState().isOn()) {
         processed.add(cube);
       }
 
@@ -97,7 +96,7 @@ public class ReactorCore {
     }
 
     private boolean isOn() {
-      return getState() == ON;
+      return getState().isOn();
     }
 
     private boolean contains(final CubeExtent other) {
@@ -168,7 +167,6 @@ public class ReactorCore {
 
     private final int end;
 
-
     private Edge(final int start, final int end) {
       this.start = start;
       this.end = end;
@@ -215,9 +213,10 @@ public class ReactorCore {
     public String toString() {
       return String.format("%d..%d", start, end);
     }
+
   }
 
-  enum CubeState {
+  private enum CubeState {
 
     ON,
     OFF;
@@ -228,6 +227,10 @@ public class ReactorCore {
 
     private CubeState flip() {
       return this == ON ? OFF : ON;
+    }
+
+    private boolean isOn() {
+      return this == ON;
     }
 
   }

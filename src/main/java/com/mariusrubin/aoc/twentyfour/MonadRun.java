@@ -7,43 +7,43 @@ import java.util.StringJoiner;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class MonadRun {
+class MonadRun {
 
   private final RunType type;
   private final int     offset;
   private       int     inputMin;
   private       int     inputMax;
 
-  public MonadRun(final RunType type, final int offset) {
+  MonadRun(final RunType type, final int offset) {
     this.type = type;
     this.offset = offset;
   }
 
-  public boolean isComplete() {
+  boolean isComplete() {
     return inputMin > 0 && inputMax > 0;
   }
 
-  public RunType getType() {
+  RunType getType() {
     return type;
   }
 
-  public int getOffset() {
+  int getOffset() {
     return offset;
   }
 
-  public int getInputMin() {
+  int getInputMin() {
     return inputMin;
   }
 
-  public void setInputMin(final int inputMin) {
+  void setInputMin(final int inputMin) {
     this.inputMin = inputMin;
   }
 
-  public int getInputMax() {
+  int getInputMax() {
     return inputMax;
   }
 
-  public void setInputMax(final int inputMax) {
+  void setInputMax(final int inputMax) {
     this.inputMax = inputMax;
   }
 

@@ -4,15 +4,18 @@ import static java.lang.Integer.parseInt;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 /**
  * @author Marius Rubin
  * @since 0.1.0
  */
-public abstract class AbstractDieGame implements DieGame {
+abstract class AbstractDieGame implements DieGame {
 
   private static final Pattern INPUT = Pattern.compile("Player [0-9] starting position: ([0-9])");
+
+  protected static final int MAX_ROLLS = 3;
 
   private final int playerOneStart;
   private final int playerTwoStart;
@@ -49,7 +52,13 @@ public abstract class AbstractDieGame implements DieGame {
 
   protected abstract int getWinningScore();
 
+  protected static BiFunction<GameState, Integer, GameState> functionFromFlag(final int playerFlag) {
+    return playerFlag == 0 ? GameState::updateOne : GameState::updateTwo;
+  }
+
   protected static class GameState {
+
+    private static final int MAX_POSITION = 10;
 
     private final int onePosition;
     private final int twoPosition;
@@ -64,14 +73,6 @@ public abstract class AbstractDieGame implements DieGame {
       this.twoPosition = twoPosition;
       this.oneScore = oneScore;
       this.twoScore = twoScore;
-    }
-
-    protected int getOnePosition() {
-      return onePosition;
-    }
-
-    protected int getTwoPosition() {
-      return twoPosition;
     }
 
     protected int getOneScore() {
@@ -96,10 +97,11 @@ public abstract class AbstractDieGame implements DieGame {
 
       final var newPosition = playerPosition + dieRollTotal;
 
-      if (newPosition % 10 == 0) {
-        return 10;
+      if (newPosition % MAX_POSITION == 0) {
+        return MAX_POSITION;
       }
-      return newPosition % 10;
+
+      return newPosition % MAX_POSITION;
 
     }
 

@@ -41,10 +41,6 @@ public class FileLoader {
     return boxedIntegers().mapToInt(Integer::intValue);
   }
 
-  public IntStream binaryIntegers() {
-    return boxedIntegers(2).mapToInt(Integer::intValue);
-  }
-
   public IntStream commaSeparatedIntegers() {
     return lines().flatMap(COMMA::splitAsStream).mapToInt(Integer::parseInt);
   }

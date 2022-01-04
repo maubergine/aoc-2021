@@ -23,7 +23,8 @@ public class TwentySecondDecember implements Callable<Integer> {
 
     final var input = new FileLoader(INPUT).allLines();
 
-    final var smallReactor = new ReactorCore(input, 50);
+    final int boundarySize = 50;
+    final var smallReactor = new ReactorCore(input, boundarySize);
 
     System.out.printf("Small reactor on cubes: %d%s",
                       smallReactor.countOnCubes(),

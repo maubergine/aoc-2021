@@ -25,7 +25,11 @@ public class ThirteenthDecember implements Callable<Integer> {
 
     final var bot = new OrigamiBot(data);
 
-    System.out.printf("Dots after 1 fold: %d%s", bot.countDotsAfterFolding(1), lineSeparator());
+    final var folds = 1;
+    System.out.printf("Dots after %d fold: %d%s",
+                      folds,
+                      bot.countDotsAfterFolding(folds),
+                      lineSeparator());
 
     final var fullFold    = new OrigamiBot(data);
     final var finalOutput = fullFold.fold().toList();

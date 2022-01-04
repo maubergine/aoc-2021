@@ -23,16 +23,20 @@ public class SixthDecember implements Callable<Integer> {
 
     final var initialPosition = new FileLoader(GAMES).allCommaSeparatedIntegers();
 
-    final var school = new LanternfishSchool(initialPosition);
-    school.passDays(80);
+    final var school        = new LanternfishSchool(initialPosition);
+    final var firstDayCount = 80;
+    school.passDays(firstDayCount);
 
-    System.out.printf("Fish count after 80 days: %d %s",
+    System.out.printf("Fish count after %d days: %d %s",
+                      firstDayCount,
                       school.lanternFishCount(),
                       lineSeparator());
 
-    school.passDays(256 - 80);
+    final var secondDayCount = 256;
+    school.passDays(secondDayCount - firstDayCount);
 
-    System.out.printf("Fish count after 256 days: %d %s",
+    System.out.printf("Fish count after %d days: %d %s",
+                      secondDayCount,
                       school.lanternFishCount(),
                       lineSeparator());
 

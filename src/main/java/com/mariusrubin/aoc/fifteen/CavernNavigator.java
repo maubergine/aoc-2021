@@ -13,7 +13,7 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class CavernNavigator {
+class CavernNavigator {
 
   private final Graph<CavernNode, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(
       DefaultWeightedEdge.class);
@@ -23,7 +23,7 @@ public class CavernNavigator {
   private final int maxRow;
   private final int maxColumn;
 
-  public CavernNavigator(final int[][] cavern) {
+  CavernNavigator(final int[][] cavern) {
 
     this.cavern = cavern.clone();
 
@@ -57,8 +57,12 @@ public class CavernNavigator {
   }
 
 
-  public List<CavernNode> lowestRiskPath() {
+  List<CavernNode> lowestRiskPath() {
     return getPath().getVertexList();
+  }
+
+  long scoreLowestPath() {
+    return Math.round(getPath().getWeight());
   }
 
   private GraphPath<CavernNode, DefaultWeightedEdge> getPath() {
@@ -82,14 +86,6 @@ public class CavernNavigator {
 
   }
 
-  public long scoreLowestPath() {
-    return Math.round(getPath().getWeight());
-  }
-
-  public record CavernNode(int riskScore, int row, int column) {
-
-  }
-
   private Stream<CavernNode> getAdjacent(final CavernNode node, final int[][] cavern) {
 
     return Stream.of(new int[]{node.row() - 1, node.column()},
@@ -99,6 +95,10 @@ public class CavernNavigator {
                  .filter(ints -> ints[0] >= 0 && ints[0] <= maxRow)
                  .filter(ints -> ints[1] >= 0 && ints[1] <= maxColumn)
                  .map(ints -> new CavernNode(cavern[ints[0]][ints[1]], ints[0], ints[1]));
+
+  }
+
+  public record CavernNode(int riskScore, int row, int column) {
 
   }
 }

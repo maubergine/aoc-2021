@@ -20,16 +20,18 @@ public class FirstDecember implements Callable<Integer> {
 
   private static int countIncreases(final int window) {
     final var loader = new FileLoader(FIRST_DECEMBER_TXT);
-    return new SonarCounter().countIncreases(loader.allIntegers(), window);
+    return SonarCounter.countIncreases(loader.allIntegers(), window);
   }
 
   @Override
   public Integer call() {
 
-    final var firstPuzzle = countIncreases(1);
+    final var firstWindow = 1;
+    final var firstPuzzle = countIncreases(firstWindow);
     System.out.printf("Noisy counter: %d increases%s", firstPuzzle, lineSeparator());
 
-    final var secondPuzzle = countIncreases(3);
+    final var secondWindow = 3;
+    final var secondPuzzle = countIncreases(secondWindow);
     System.out.printf("Smooth counter: %d increases%s", secondPuzzle, lineSeparator());
 
     return Executor.SUCCESS;

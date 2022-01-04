@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -13,17 +12,11 @@ import org.junit.jupiter.api.Test;
  */
 public class ASnailfishCalculator {
 
-  private SnailfishCalculator underTest;
-
-  @BeforeEach
-  public void init() {
-    underTest = new SnailfishCalculator();
-  }
-
 
   @Test
   public void shouldNotReduceSimpleNumber() {
-    assertThat(underTest.reduce(new SnailNumber("[1,2]"))).isEqualTo(new SnailNumber("[1,2]"));
+    assertThat(SnailfishCalculator.reduce(new SnailNumber("[1,2]"))).isEqualTo(new SnailNumber(
+        "[1,2]"));
   }
 
   @Test
@@ -34,7 +27,7 @@ public class ASnailfishCalculator {
                                   "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]",
                                   "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
                               .map(SnailNumber::new)
-                              .map(underTest::reduce)
+                              .map(SnailfishCalculator::reduce)
                               .map(SnailNumber::toString)
                               .toList();
 
@@ -47,28 +40,29 @@ public class ASnailfishCalculator {
 
   @Test
   public void shouldAddSimpleNumbers() {
-    assertThat(underTest.add(new SnailNumber("[1,2]"),
-                             new SnailNumber("[[3,4],5]"))
-                        .toString()).isEqualTo("[[1,2],[[3,4],5]]");
+    assertThat(SnailfishCalculator.add(new SnailNumber("[1,2]"),
+                                       new SnailNumber("[[3,4],5]"))
+                                  .toString()).isEqualTo("[[1,2],[[3,4],5]]");
   }
 
   @Test
   public void shouldAddAndReduceComplexNumbers() {
-    assertThat(underTest.add(new SnailNumber("[[[[4,3],4],4],[7,[[8,4],9]]]"),
-                             new SnailNumber("[1,1]"))
-                        .toString()).isEqualTo("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]");
+    assertThat(SnailfishCalculator.add(new SnailNumber("[[[[4,3],4],4],[7,[[8,4],9]]]"),
+                                       new SnailNumber("[1,1]"))
+                                  .toString()).isEqualTo("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]");
   }
 
   @Test
   public void shouldAddListsOfNumbers() {
 
-    assertThat(underTest.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]").toString())
+    assertThat(SnailfishCalculator.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]").toString())
         .isEqualTo("[[[[1,1],[2,2]],[3,3]],[4,4]]");
 
-    assertThat(underTest.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]").toString())
+    assertThat(SnailfishCalculator.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]").toString())
         .isEqualTo("[[[[3,0],[5,3]],[4,4]],[5,5]]");
 
-    assertThat(underTest.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]", "[6,6]").toString())
+    assertThat(SnailfishCalculator.addList("[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]", "[6,6]")
+                                  .toString())
         .isEqualTo("[[[[5,0],[7,4]],[5,5]],[6,6]]");
   }
 
@@ -87,7 +81,7 @@ public class ASnailfishCalculator {
         "[[[5,[7,4]],7],1]",
         "[[[[4,2],2],6],[8,7]]");
 
-    assertThat(underTest.addList(numbers).toString()).isEqualTo(
+    assertThat(SnailfishCalculator.addList(numbers).toString()).isEqualTo(
         "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]");
 
 
@@ -108,7 +102,7 @@ public class ASnailfishCalculator {
         "[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]",
         "[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]");
 
-    assertThat(underTest.calculateMagnitude(numbers)).isEqualTo(4140);
+    assertThat(SnailfishCalculator.calculateMagnitude(numbers)).isEqualTo(4140);
 
   }
 
@@ -127,7 +121,7 @@ public class ASnailfishCalculator {
         "[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]",
         "[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]");
 
-    assertThat(underTest.calculateLargestMagnitude(numbers)).isEqualTo(3993);
+    assertThat(SnailfishCalculator.calculateLargestMagnitude(numbers)).isEqualTo(3993);
 
   }
 

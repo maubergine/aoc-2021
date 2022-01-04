@@ -8,32 +8,34 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class OctopusSwarm {
+class OctopusSwarm {
 
   private final Octopus[][] swarm;
+  private final int         totalOctopi;
 
-  public OctopusSwarm(final int[][] input) {
+  OctopusSwarm(final int[][] input) {
     swarm = IntStream.range(0, input.length)
                      .mapToObj(i -> toOctopi(input, i))
                      .toArray(Octopus[][]::new);
+    totalOctopi = input.length * input[0].length;
   }
 
-  public Stream<int[][]> streamSteps(final int howMany) {
+  Stream<int[][]> streamSteps(final int howMany) {
     return IntStream.range(0, howMany).mapToObj(i -> step());
   }
 
-  public int countFlashes(final int steps) {
+  int countFlashes(final int steps) {
     return IntStream.range(0, steps)
                     .map(i -> doStep())
                     .sum();
   }
 
-  public int findFirstFlash() {
+  int findFirstFlash() {
     return IntStream.range(0, Integer.MAX_VALUE)
                     .sequential()
                     .flatMap(i -> {
                       final var flashes = doStep();
-                      if (flashes == 100) {
+                      if (flashes == totalOctopi) {
                         return IntStream.of(i);
                       }
                       return IntStream.empty();

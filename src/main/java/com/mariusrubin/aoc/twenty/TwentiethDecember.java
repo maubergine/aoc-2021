@@ -26,10 +26,16 @@ public class TwentiethDecember implements Callable<Integer> {
     final var enhancer = new ImageEnhancer(lines.get(0));
     final var input    = lines.stream().sequential().skip(2).toList();
 
-    System.out.printf("Lit cells after 2: %d%s", enhancer.countLitCells(input, 2), lineSeparator());
+    final var firstTurns = 2;
+    System.out.printf("Lit cells after %d: %d%s",
+                      firstTurns,
+                      enhancer.countLitCells(input, firstTurns),
+                      lineSeparator());
 
-    System.out.printf("Lit cells after 50: %d%s",
-                      enhancer.countLitCells(input, 50),
+    final var secondTurns = 50;
+    System.out.printf("Lit cells after %d: %d%s",
+                      secondTurns,
+                      enhancer.countLitCells(input, secondTurns),
                       lineSeparator());
 
     return Executor.SUCCESS;

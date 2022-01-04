@@ -27,8 +27,9 @@ public class FifteenthDecember implements Callable<Integer> {
                       navigator.scoreLowestPath(),
                       lineSeparator());
 
-    final var bigCavern    = new CavernScanner(5).scanCavern(CAVERN);
-    final var bigNavigator = new CavernNavigator(bigCavern);
+    final var increasedRange = 5;
+    final var bigCavern      = new CavernScanner(increasedRange).scanCavern(CAVERN);
+    final var bigNavigator   = new CavernNavigator(bigCavern);
 
     System.out.printf("Lowest risk path: %d%s",
                       bigNavigator.scoreLowestPath(),

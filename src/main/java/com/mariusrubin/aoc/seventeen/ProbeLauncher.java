@@ -10,8 +10,7 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class ProbeLauncher {
-
+class ProbeLauncher {
 
   private static final Pattern PATTERN = Pattern.compile(
       "^target area: x=([0-9]+)\\.\\.([0-9]+), y=(-[0-9]+)\\.\\.(-[0-9]+)$");
@@ -21,7 +20,7 @@ public class ProbeLauncher {
   private final int yMin;
   private final int yMax;
 
-  public ProbeLauncher(final String input) {
+  ProbeLauncher(final String input) {
     final var match = PATTERN.matcher(input);
     if (match.find()) {
       xMin = Integer.parseInt(match.group(1));
@@ -33,39 +32,21 @@ public class ProbeLauncher {
     }
   }
 
-  public List<Step> calculateStepsForTrajectory(final int forwardVelocity,
-                                                final int verticalVelocity,
-                                                final int howManySteps) {
-
-    return IntStream.rangeClosed(1, howManySteps)
-                    .mapToObj(i -> calculateStep(forwardVelocity, verticalVelocity, i))
-                    .toList();
-
-  }
-
-  public InitialVelocity findHighestViableVelocity() {
+  InitialVelocity findHighestViableVelocity() {
     return findViableVelocities().stream()
                                  .max(Comparator.comparing(InitialVelocity::verticalVelocity))
                                  .orElseThrow();
   }
 
-  public int findHighestYPosition() {
+  int findHighestYPosition() {
     return findViableFiringSolutions().stream()
                                       .mapToInt(ProbeLauncher::getMaxHeight)
                                       .max()
                                       .orElseThrow();
   }
 
-  private static int getMaxHeight(final FiringSolution solution) {
-    return solution.steps()
-                   .stream()
-                   .mapToInt(Step::y)
-                   .max()
-                   .orElseThrow();
-  }
 
-
-  public List<FiringSolution> findViableFiringSolutions() {
+  List<FiringSolution> findViableFiringSolutions() {
 
     final var viableXVelocities = findViableXVelocities();
     final var viableYVelocities = findViableYVelocities();
@@ -76,15 +57,25 @@ public class ProbeLauncher {
 
   }
 
-  public List<InitialVelocity> findViableVelocities() {
+  List<InitialVelocity> findViableVelocities() {
     return findViableFiringSolutions().stream()
                                       .map(FiringSolution::initialVelocity)
                                       .distinct()
                                       .toList();
   }
 
-  public int countViableVelocities() {
+  int countViableVelocities() {
     return findViableVelocities().size();
+  }
+
+  static List<Step> calculateStepsForTrajectory(final int forwardVelocity,
+                                                final int verticalVelocity,
+                                                final int howManySteps) {
+
+    return IntStream.rangeClosed(1, howManySteps)
+                    .mapToObj(i -> calculateStep(forwardVelocity, verticalVelocity, i))
+                    .toList();
+
   }
 
   private Stream<FiringSolution> toViableFiringSolutions(final InitialVelocity initial) {
@@ -140,6 +131,14 @@ public class ProbeLauncher {
 
   private boolean isViableY(final int y) {
     return y >= yMin && y <= yMax;
+  }
+
+  private static int getMaxHeight(final FiringSolution solution) {
+    return solution.steps()
+                   .stream()
+                   .mapToInt(Step::y)
+                   .max()
+                   .orElseThrow();
   }
 
   private static Step calculateStep(final int initialForward,

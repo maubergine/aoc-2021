@@ -24,8 +24,9 @@ public class EleventhDecember implements Callable<Integer> {
     final var data = new FileLoader(SWARM).integerArray();
 
     final var swarm = new OctopusSwarm(data);
+    final var steps = 100;
 
-    System.out.printf("Flash count: %d%s", swarm.countFlashes(100), lineSeparator());
+    System.out.printf("Flash count: %d%s", swarm.countFlashes(steps), lineSeparator());
 
     final var flashCountSwarm = new OctopusSwarm(data);
 

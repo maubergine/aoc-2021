@@ -6,9 +6,8 @@ import java.util.Map;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public interface ALUOperation {
+interface ALUOperation {
 
   void apply(final Map<Character, Long> variables);
 
-  ALUOperation copy();
 }

@@ -20,7 +20,7 @@ public class VentScanner {
 
   private final List<Segment> segments;
 
-  public VentScanner(final List<String> inputs, final Direction... allowedDirections) {
+  VentScanner(final List<String> inputs, final Direction... allowedDirections) {
     final Set<Direction> directionSet = EnumSet.copyOf(Set.of(allowedDirections));
     segments = inputs.stream()
                      .map(VentScanner::toSegment)
@@ -28,11 +28,11 @@ public class VentScanner {
                      .toList();
   }
 
-  public VentScanner(final List<String> inputs) {
+  VentScanner(final List<String> inputs) {
     this(inputs, Direction.HORIZONTAL, Direction.VERTICAL, Direction.DIAGONAL);
   }
 
-  public long countOverlaps() {
+  long countOverlaps() {
     final var xMax = segments.stream()
                              .flatMapToInt(seg -> IntStream.of(seg.getStart().x(),
                                                                seg.getFinish().x()))
@@ -155,7 +155,7 @@ public class VentScanner {
 
   }
 
-  public enum Direction {
+  enum Direction {
     HORIZONTAL,
     VERTICAL,
     DIAGONAL

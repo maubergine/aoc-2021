@@ -31,7 +31,7 @@ public class APowerMonitor {
 
   @BeforeEach
   public void init() {
-    underTest = new PowerMonitor(INPUT, 5);
+    underTest = new PowerMonitor(INPUT);
   }
 
   @Test

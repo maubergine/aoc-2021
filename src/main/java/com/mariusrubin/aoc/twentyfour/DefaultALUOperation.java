@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class DefaultALUOperation implements ALUOperation {
+class DefaultALUOperation implements ALUOperation {
 
   private static final Pattern PATTERN = Pattern.compile(" ([a-z]|[-0-9]+) ([a-z]|[-0-9]+)");
 
@@ -33,8 +33,8 @@ public class DefaultALUOperation implements ALUOperation {
     this.store = store;
   }
 
-  public DefaultALUOperation(final BiFunction<Long, Long, Long> calculation,
-                             final String operation) {
+  DefaultALUOperation(final BiFunction<Long, Long, Long> calculation,
+                      final String operation) {
     this.calculation = calculation;
 
     final var match = PATTERN.matcher(operation);
@@ -60,11 +60,6 @@ public class DefaultALUOperation implements ALUOperation {
   @Override
   public void apply(final Map<Character, Long> variables) {
     store.accept(variables, calculation.apply(getLeft.apply(variables), getRight.apply(variables)));
-  }
-
-  @Override
-  public ALUOperation copy() {
-    return new DefaultALUOperation(calculation, getLeft, getRight, store);
   }
 
   private static boolean isLong(final String value) {

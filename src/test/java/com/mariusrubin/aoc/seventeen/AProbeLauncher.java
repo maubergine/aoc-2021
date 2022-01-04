@@ -25,7 +25,7 @@ public class AProbeLauncher {
   @Test
   public void shouldCalculateStepsBasedOnTrajectory() {
 
-    final var result = underTest.calculateStepsForTrajectory(7, 2, 7);
+    final var result = ProbeLauncher.calculateStepsForTrajectory(7, 2, 7);
 
     assertThat(result).containsExactly(
         new Step(7, 2),

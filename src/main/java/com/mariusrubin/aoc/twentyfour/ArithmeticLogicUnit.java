@@ -13,30 +13,24 @@ import java.util.stream.LongStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class ArithmeticLogicUnit {
+class ArithmeticLogicUnit {
+
+  private static final int  MAX_NUM_LENGTH = 14;
+  private static final char Z_REGISTER     = 'z';
 
   private       Map<Character, Long> values;
-  private       List<ALUOperation>   toApply;
+  private final List<ALUOperation>   toApply;
   private final long                 initValue;
 
 
-  public ArithmeticLogicUnit(final ArithmeticLogicUnit unit, final long initValue) {
-    toApply = unit.toApply.stream().sequential().map(ALUOperation::copy).toList();
-    this.initValue = initValue;
-  }
-
-  public ArithmeticLogicUnit(final ArithmeticLogicUnit unit) {
-    this(unit, 0L);
-  }
-
-  public ArithmeticLogicUnit(final List<String> inputs) {
+  ArithmeticLogicUnit(final List<String> inputs) {
     toApply = toOperations(inputs);
     initValue = 0L;
   }
 
-  public void run(final String input) {
+  void run(final String input) {
 
-    if (input.length() > 14) {
+    if (input.length() > MAX_NUM_LENGTH) {
       throw new IllegalArgumentException("Cannot work with numbers > 14 digits");
     }
     final var asArray = input.chars()
@@ -49,7 +43,7 @@ public class ArithmeticLogicUnit {
 
   }
 
-  public void run(final long... inputs) {
+  void run(final long... inputs) {
     final var inputQueue = LongStream.of(inputs)
                                      .boxed()
                                      .collect(Collectors.toCollection(ArrayDeque::new));
@@ -60,7 +54,20 @@ public class ArithmeticLogicUnit {
            .forEach(op -> op.apply(values));
   }
 
-  private void populateValue(final Deque<Long> inputQueue, final ALUOperation op) {
+  Map<Character, Long> reset() {
+    return LongStream.of(initValue)
+                     .boxed()
+                     .collect(Collectors.toMap(l -> Z_REGISTER,
+                                               Function.identity(),
+                                               (l1, l2) -> l2,
+                                               HashMap::new));
+  }
+
+  long getZValue() {
+    return values.get(Z_REGISTER);
+  }
+
+  private static void populateValue(final Deque<Long> inputQueue, final ALUOperation op) {
     if (op instanceof InputOperation in) {
       final var value = inputQueue.poll();
       if (value == null) {
@@ -68,19 +75,6 @@ public class ArithmeticLogicUnit {
       }
       in.setValue(value);
     }
-  }
-
-  public Map<Character, Long> reset() {
-    return LongStream.of(initValue)
-                     .boxed()
-                     .collect(Collectors.toMap(l -> 'z',
-                                               Function.identity(),
-                                               (l1, l2) -> l2,
-                                               HashMap::new));
-  }
-
-  public long getZValue() {
-    return values.get('z');
   }
 
   private static List<ALUOperation> toOperations(final List<String> inputs) {

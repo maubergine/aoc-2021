@@ -1,5 +1,6 @@
 package com.mariusrubin.aoc.four;
 
+import static com.mariusrubin.aoc.four.BingoBoard.LINE_LENGTH;
 import static java.lang.Math.floor;
 import static java.lang.Math.round;
 import static java.util.function.Predicate.not;
@@ -15,23 +16,23 @@ import java.util.stream.IntStream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class BingoInputParser {
+class BingoInputParser {
 
   private static final Pattern CALL_SPLIT = Pattern.compile(",");
 
   private final List<String> lines;
 
-  public BingoInputParser(final List<String> lines) {
+  BingoInputParser(final List<String> lines) {
     this.lines = Collections.unmodifiableList(lines);
   }
 
-  public List<Integer> calls() {
+  List<Integer> calls() {
     return CALL_SPLIT.splitAsStream(lines.get(0))
                      .map(Integer::valueOf)
                      .toList();
   }
 
-  public List<BingoBoard> boards() {
+  List<BingoBoard> boards() {
 
     final var counter = new AtomicInteger();
 
@@ -40,7 +41,7 @@ public class BingoInputParser {
                 .skip(2)
                 .filter(not(String::isEmpty))
                 .map(s -> {
-                  final var group = (double) counter.getAndIncrement() / 5;
+                  final var group = (double) counter.getAndIncrement() / LINE_LENGTH;
                   return new IntegerLine((int) round(floor(group)), toIntegers(s));
                 })
                 .collect(Collectors.groupingBy(IntegerLine::group))
@@ -56,7 +57,7 @@ public class BingoInputParser {
   }
 
   private static List<Integer> toIntegers(final String line) {
-    return IntStream.range(0, 5)
+    return IntStream.range(0, LINE_LENGTH)
                     .map(i -> i * 3)
                     .mapToObj(i -> line.substring(i, i + 2))
                     .map(String::trim)

@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class OrigamiBot {
+class OrigamiBot {
 
   private static final Pattern COORD_SPLIT = Pattern.compile("^([0-9]+),([0-9]+)$");
   private static final Pattern FOLD_SPLIT  = Pattern.compile("^fold along ([x|y])=([0-9]+)$");
@@ -22,24 +22,24 @@ public class OrigamiBot {
   private       String[][] dots;
   private final List<Fold> folds;
 
-  public OrigamiBot(final List<String> instructions) {
+  OrigamiBot(final List<String> instructions) {
     dots = createDots(instructions);
     folds = createFolds(instructions);
   }
 
-  private List<Fold> createFolds(final List<String> instructions) {
+  private static List<Fold> createFolds(final List<String> instructions) {
 
     return instructions.stream()
                        .filter(FOLD_SPLIT.asMatchPredicate())
                        .map(FOLD_SPLIT::matcher)
-                       .peek(Matcher::find)
-                       .map(this::toFold)
+                       .filter(Matcher::find)
+                       .map(OrigamiBot::toFold)
                        .toList();
 
 
   }
 
-  private Fold toFold(final Matcher match) {
+  private static Fold toFold(final Matcher match) {
     final var value = Integer.parseInt(match.group(2));
     return switch (match.group(1)) {
       case "x" -> new Fold(value, -1);
@@ -49,11 +49,11 @@ public class OrigamiBot {
     };
   }
 
-  private String[][] createDots(final List<String> instructions) {
+  private static String[][] createDots(final List<String> instructions) {
     final var coords = instructions.stream()
                                    .takeWhile(COORD_SPLIT.asMatchPredicate())
                                    .map(COORD_SPLIT::matcher)
-                                   .peek(Matcher::find)
+                                   .filter(Matcher::find)
                                    .map(match -> new int[]{parseInt(match.group(1)),
                                                            parseInt(match.group(2))})
                                    .toList();
@@ -76,28 +76,28 @@ public class OrigamiBot {
 
   }
 
-  public int countDotsAfterFolding(final int howMany) {
+  int countDotsAfterFolding(final int howMany) {
     final var counts = folds.stream()
                             .limit(howMany)
                             .map(this::doFold)
-                            .mapToInt(this::countVisible)
+                            .mapToInt(OrigamiBot::countVisible)
                             .toArray();
 
     return counts.length > 0 ? counts[counts.length - 1] : 0;
   }
 
-  public Stream<String> fold() {
+  Stream<String> fold() {
     return Stream.concat(Stream.of(new String[][][]{dots}), folds.stream().map(this::doFold))
-                 .map(this::format);
+                 .map(OrigamiBot::format);
   }
 
-  private int countVisible(final String[][] paper) {
+  private static int countVisible(final String[][] paper) {
     return Arrays.stream(paper)
                  .flatMapToInt(array -> Arrays.stream(array).mapToInt(s -> s == null ? 0 : 1))
                  .sum();
   }
 
-  private String format(final String[][] result) {
+  private static String format(final String[][] result) {
     return Arrays.stream(result)
                  .map(line -> Arrays.stream(line)
                                     .map(s -> s == null ? "." : s)

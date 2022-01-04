@@ -10,12 +10,15 @@ import java.util.stream.Collectors;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class DisplayMatcher {
+final class DisplayMatcher {
 
   private static final Map<String, Display> DISPLAYS;
 
+  private static final int LENGTH = 7;
+
+
   static {
-    DISPLAYS = CombinationGenerator.allCombinations('a', 'g', 7)
+    DISPLAYS = CombinationGenerator.allCombinations('a', 'g', LENGTH)
                                    .parallelStream()
                                    .map(Display::new)
                                    .collect(Collectors.toMap(Display::segmentPattern,
@@ -23,8 +26,11 @@ public class DisplayMatcher {
 
   }
 
-  public Display findDisplayMatching(final String pattern) {
+  static Display findDisplayMatching(final String pattern) {
     return DISPLAYS.get(alphabetise(pattern));
+  }
+
+  private DisplayMatcher() {
   }
 
 }

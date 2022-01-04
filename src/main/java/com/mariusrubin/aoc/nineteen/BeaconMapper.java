@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @author Marius Rubin
  * @since 0.1.0
  */
-public class BeaconMapper {
+class BeaconMapper {
 
   private static final Pattern SCANNER_NAME = Pattern.compile("^--- scanner ([0-9]+) ---$");
 
@@ -24,7 +24,7 @@ public class BeaconMapper {
 
   private final Map<Integer, BeaconScanner> beacons = new TreeMap<>();
 
-  public BeaconMapper(final List<String> inputs) {
+  BeaconMapper(final List<String> inputs) {
 
     var id       = -1;
     var readings = new ArrayList<BeaconReading>();
@@ -48,7 +48,7 @@ public class BeaconMapper {
 
   }
 
-  public int getLargestManhattanDistance() {
+  int getLargestManhattanDistance() {
     processBeacons();
     return beacons.values()
                   .stream()
@@ -61,12 +61,12 @@ public class BeaconMapper {
                   .orElseThrow();
   }
 
-  public int countBeacons() {
+  int countBeacons() {
     processBeacons();
     return allReadings().size();
   }
 
-  public Set<BeaconReading> allReadings() {
+  Set<BeaconReading> allReadings() {
     processBeacons();
     return beacons.values()
                   .stream()
@@ -76,7 +76,7 @@ public class BeaconMapper {
   }
 
 
-  public Map<Integer, BeaconReading> getRelativePositions() {
+  Map<Integer, BeaconReading> getRelativePositions() {
 
     processBeacons();
     return beacons.values()
@@ -85,7 +85,7 @@ public class BeaconMapper {
 
   }
 
-  public void processBeacons() {
+  void processBeacons() {
 
     final var absolute = new ArrayList<BeaconScanner>();
     absolute.add(beacons.get(0));
