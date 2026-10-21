@@ -141,3 +141,18 @@ Temporary Items
 ### Custom
 .idea/**
 *.mp4
+
+node_modules/
+
+# Keys, certificates and secrets: never commit them
+*.pem
+*.key
+*.p12
+*.p8
+*.pfx
+*.mobileprovision
+*.cer
+*.har
+.env
+.env.*
+!.env.example
